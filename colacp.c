@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #define FALSE 0;
 #define TRUE 1;
@@ -46,21 +47,33 @@ TColaCP crearColaCp(int (*f)(TEntrada, TEntrada)){
     cola->comparador = f;
     return cola;
 }
-void insertarRec(TColaCP cola, TNodo actual){
-    cola->raiz = actual;
+void insertarRec(TColaCP cola, TNodo actual, TNodo nuevo, int nivel){
+    for(int i = 0; i < nivel; i++)
+        actual = actual->hijo_derecho;
+    //actual esta en el hijo mas a la derecha del ultimo nivel
+    int encontre = FALSE;
+    while(!encontre){
+        if(actual->padre->hijo_izquierdo == NULL){
+            encontre = TRUE;
+            actual->padre->hijo_izquierdo = nuevo;
+        }
+    }
 }
 
 int cpInsertar(TColaCP cola, TEntrada entr){
     if(cpCantidad(cola) == 0){
         cola->raiz->entrada = entr;
         cola->cantidad_elementos++;
-        return 1;
+        cola->raiz->hijo_derecho = POS_NULA;
+        cola->raiz->hijo_izquierdo = POS_NULA;
+        return TRUE;
     }else{
         //insertar en la ult posicion
         //ir chequeando si la prioridad del padre es mayor a la actual
         TNodo nuevo = malloc(sizeof(struct TNodo));
         nuevo->entrada = entr;
-        insertarRec(cola, nuevo);
+        int nivel = (int)(log(cola->cantidad_elementos)/log(2)); //log2 (cantidad de nodos)
+        insertarRec(cola, cola->raiz,nuevo, nivel);
         while((nuevo->padre != NULL) && cola->comparador(nuevo->padre->entrada, nuevo->entrada) == 1){
             //swap de nuevo y padre
             TNodo padreAnterior = nuevo->padre;
@@ -80,9 +93,9 @@ int cpInsertar(TColaCP cola, TEntrada entr){
             padreAnterior->hijo_derecho = ELE_NULO;
             padreAnterior->hijo_izquierdo = ELE_NULO;
         }
-        return 1;
+        return TRUE;
     }
-    return 0;
+    return FALSE;
 }
 
 TEntrada cpEliminar(TColaCP cola){

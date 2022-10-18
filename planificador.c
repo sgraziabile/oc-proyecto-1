@@ -10,12 +10,16 @@ typedef struct ciudad {
     float pos_y;
 } * TCiudad;
 
-void mostrarAscendente();
-void mostrarDescendente();
-void reducirHorasManejo();
-void salir(); //debo liberar o se libera solo?
+void mostrarAscendente(){
+}
+void mostrarDescendente(){
+}
+void reducirHorasManejo(){
+}
+void salir(){
+} //debo liberar o se libera solo?
 
-main(){
+int main(){
     int termino; termino = FALSE;
     do{
         printf("Ingrese el numero de la operacion que desee\n");
@@ -32,7 +36,7 @@ main(){
             case 4: salir(); termino = TRUE; break;
             default: printf("El numero ingresado no es valido");
         }
-    }while (termino == FALSE);
+    }while (termino == 0);
     return 0;
 }
 
