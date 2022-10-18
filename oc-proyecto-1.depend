@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1666050293 source:c:\users\joaquin\documents\oc-proyecto-1\planificador.c
+	<stdio.h>
+	<stdlib.h>
+
+1666052151 source:c:\users\joaquin\documents\oc-proyecto-1\colacp.c
+	<stdio.h>
+	<stdlib.h>
+
