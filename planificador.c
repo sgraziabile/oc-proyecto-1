@@ -33,13 +33,15 @@ int main(){
         printf("3. Reducir horas de manejo\n");
         printf("4. Salir\n");
         int opcion;
+        printf("\n");
         scanf("%d", &opcion);
+        printf("\n");
         switch(opcion){
             case 1: mostrarAscendente(); break;
             case 2: mostrarDescendente(); break;
             case 3: reducirHorasManejo(); break;
             case 4: salir(); termino = TRUE; break;
-            default: printf("El numero ingresado no es valido\n");
+            default: printf("El numero ingresado no es valido\n");break;
         }
     }while (!termino);
     return 0;
