@@ -47,15 +47,13 @@ TColaCP crearColaCp(int (*f)(TEntrada, TEntrada)){
     cola->comparador = f;
     return cola;
 }
-void insertarRec(TColaCP cola, TNodo actual, TNodo nuevo, int nivel){
-    for(int i = 0; i < nivel; i++)
-        actual = actual->hijo_derecho;
-    //actual esta en el hijo mas a la derecha del ultimo nivel
+void nodoEnPosicion(TColaCP cola, TNodo actual, TNodo nuevo, int nivel){
+    //actual esta en el hijo mas a la izquierda del ultimo nivel
     int encontre = FALSE;
     while(!encontre){
-        if(actual->padre->hijo_izquierdo == NULL){
+        if(actual->padre->hijo_derecho == NULL){
             encontre = TRUE;
-            actual->padre->hijo_izquierdo = nuevo;
+            actual->padre->hijo_derecho = nuevo;
         }
     }
 }
@@ -72,42 +70,87 @@ int cpInsertar(TColaCP cola, TEntrada entr){
         //ir chequeando si la prioridad del padre es mayor a la actual
         TNodo nuevo = malloc(sizeof(struct TNodo));
         nuevo->entrada = entr;
-        int nivel = (int)(log(cola->cantidad_elementos)/log(2)); //log2 (cantidad de nodos)
-        insertarRec(cola, cola->raiz,nuevo, nivel);
+        int nivel = (int)(log(cola->cantidad_elementos)/log(2));
+        int lleno = (log(cola->cantidad_elementos+1)/log(2))/nivel == 1;
+        //si lleno es true, debo insertar en un nuevo nivel
+
+        TNodo actual = cola->raiz;
+        for(int i = 0; i < nivel; i++)
+            actual = actual->hijo_izquierdo;
+
+        if(lleno){
+            actual->hijo_izquierdo = nuevo;
+            cola->cantidad_elementos++;
+        }else{
+            nodoEnPosicion(cola, cola->raiz,nuevo, nivel); //supongo q funciona
+            cola->cantidad_elementos++;
+        }
+
         while((nuevo->padre != NULL) && cola->comparador(nuevo->padre->entrada, nuevo->entrada) == 1){
             //swap de nuevo y padre
             TNodo padreAnterior = nuevo->padre;
-            nuevo->padre = nuevo->padre->padre; //es el ancestro
+            nuevo->padre = nuevo->padre->padre;
             padreAnterior->padre = nuevo;
-            if(nuevo->padre->hijo_derecho == nuevo){
+            TNodo hi = nuevo->hijo_izquierdo;
+            TNodo hd = nuevo->hijo_derecho;
+            if(nuevo->padre->hijo_izquierdo == padreAnterior){
                 //es el hd
-                nuevo->padre->hijo_derecho = nuevo;
-                nuevo->hijo_derecho = padreAnterior;
-                nuevo->hijo_izquierdo = padreAnterior->hijo_izquierdo;
-            }else{
-                //es el hi
                 nuevo->padre->hijo_izquierdo = nuevo;
                 nuevo->hijo_izquierdo = padreAnterior;
                 nuevo->hijo_derecho = padreAnterior->hijo_derecho;
+                padreAnterior->hijo_izquierdo = hi;
+                padreAnterior->hijo_derecho = hd;
+            }else{
+                //es el hi
+                nuevo->padre->hijo_derecho = nuevo;
+                nuevo->hijo_derecho = padreAnterior;
+                nuevo->hijo_izquierdo = padreAnterior->hijo_izquierdo;
+                padreAnterior->hijo_izquierdo = hi;
+                padreAnterior->hijo_derecho = hd;
             }
-            padreAnterior->hijo_derecho = ELE_NULO;
-            padreAnterior->hijo_izquierdo = ELE_NULO;
         }
         return TRUE;
     }
     return FALSE;
 }
-
+TNodo buscarUltimo(){
+    return NULL;
+}
 TEntrada cpEliminar(TColaCP cola){
     TEntrada ret = cola->raiz->entrada;
     TNodo aux = cola->raiz;
+    if(cola->cantidad_elementos == 0)
+        return ELE_NULO;
+
     if(cola->cantidad_elementos == 1){
         cola->raiz = POS_NULA;
         cola->cantidad_elementos--;
     }else{
-        cola->raiz = cola->raiz->hijo_derecho;
+        TNodo ult = buscarUltimo(); //supongo q anda
+        ult->hijo_derecho = cola->raiz->hijo_derecho;
+        ult->hijo_izquierdo = cola->raiz->hijo_izquierdo;
+        cola->raiz = ult;
+        int huboSwap = TRUE;
+        while(huboSwap){
+            huboSwap = FALSE;
+            int prioridadMin = cola->comparador(ult->hijo_izquierdo->entrada, ult->hijo_derecho->entrada);
+            if(prioridadMin == -1){
+                if(cola->comparador(ult->entrada, ult->hijo_izquierdo->entrada) == 1){
+                    //swap
+                    huboSwap = TRUE;
+                    ult = ult->hijo_izquierdo;
+                }
+            }else{
+                if(cola->comparador(ult->entrada, ult->hijo_derecho->entrada) == 1){
+                    //swap
+                    huboSwap = TRUE;
+                    ult = ult->hijo_derecho;
+                }
+            }
+        }
         cola->cantidad_elementos--;
     }
+
     free(aux);
     return ret;
 }

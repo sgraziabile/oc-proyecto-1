@@ -11,6 +11,7 @@ typedef struct ciudad {
 } * TCiudad;
 
 void mostrarAscendente(){
+    //chequear cola no ini
 }
 void mostrarDescendente(){
 }
@@ -25,8 +26,8 @@ int main(){
         printf("Ingrese el numero de la operacion que desee\n");
         printf("1. Mostrar las ciudades por visitar en orden ascendente\n");
         printf("2. Mostrar las ciudades por visitar en orden descendente\n");
-        printf("3. Reducir horas de manejo");
-        printf("4. Salir");
+        printf("3. Reducir horas de manejo\n");
+        printf("4. Salir\n");
         int opcion;
         scanf("%d", &opcion);
         switch(opcion){
@@ -34,7 +35,7 @@ int main(){
             case 2: mostrarDescendente(); break;
             case 3: reducirHorasManejo(); break;
             case 4: salir(); termino = TRUE; break;
-            default: printf("El numero ingresado no es valido");
+            default: printf("El numero ingresado no es valido\n");
         }
     }while (termino == 0);
     return 0;
