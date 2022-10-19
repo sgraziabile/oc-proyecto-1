@@ -16,56 +16,48 @@ void crearCiudad(int x, int y, char * nombre) {
         ciudad->pos_y = y;
 
 }
+void vaciar(char temp[]) {          //vacia un arreglo de char
+    int i;
+    for(i = 0; i < 50; i++)
+        temp[i] = '\0';
+}
+void copiar(char temp[]; int i) {
+    int N = strlen(temp) + 1;       guarda la longitud de temp + '\0'
+    ciudad
+}
 
 void mostrarAscendente(){
     //hacer el heap sort
     //a lo ultimo llamar a destruir cola con una f que libere la memoria de la entrada
+    int i; int j;
+    int cont = -1;
+    char temp[50];
+    char aux;
     FILE * ptr;
     ptr = fopen("archivo_texto.txt","r");
     if(ptr != NULL) {
-        char linea[60];
-        char pos_x[5]; char pos_y[5]; //para guardar las posiciones leidas y convertirlas a float
-        char nombre[50];    //guardar memoria?
-
-        int sizeLinea = sizeof(linea) / sizeof(char);
-        int sizeNombre = sizeof(nombre) / sizeof(char);
-        int sizeNumeros = sizeof(pos_x) / sizeof(char);
-
-        //posiciones
-        float actual_x;
-        float actual_y;
-        int x;          //las declaro cuando leo cada linea;
-        int y;
-
-        int i = 0; int j = 0; //j recorre los arreglos de las posiciones
-        int fin = 0;
-        fgets(linea, 60, ptr);      //primera linea con la posicion
-        while(i < 60 && j < 5 && fin == 0) {
-            pos_x[j] = linea[i];
-            i++; j++;
-            if(linea[i] == ';') {
-                actual_x = atof(pos_x);
-                fin = 1;
-            }
+        while(!feof(ptr)) {             //cuento la cantidad de ciudades
+            fgets(temp, 50, ptr);
+            cont++;
         }
-        i++;
-        j = 0;
-        while(i < 60 && j < 5) {
-            pos_y[j] = linea[i];
-            i++; j++;
-            }
-        actual_y = atof(pos_y);
-
-        fin = 0; j = 0; fin = 0;
-        while(!feof(ptr)) {     //leer cada linea, guardar las variables y llamar a crearCiudad()
-            char x[5]; char y[5];
-            fgets(linea, 60, ptr);
-            while(i < 60 && j < 5 && fin == 0) {
-                nombre[j] = linea[i];
-                i++; j++;
-                if(linea[i] == ';') { //
-                    //char * ptrNombre = (*char)malloc(sizeof(sizeNombre +1));
+        rewind(ptr);                    //vuelvo al principio del archivo
+        TCiudad ciudad;
+        ciudad = (TCiudad)malloc(cont * sizeof(struct ciudad));
+        if(ciudad == NULL)
+            printf("No se pudo reservar memoria. \n");
+        else {
+            vaciar(temp);
+            fgets(temp, 50, ptr);       //me salto la primera linea
+            for(i = 0; !feof(f); i++) {
+                vaciar(temp);
+                aux = '0';
+                for(j = 0; aux != ';'; j++) {
+                    aux = fget(ptr);
+                    if(aux != ';') {
+                        temp[j] = aux;          //guardo cada char del nombre en temp;
+                    }
                 }
+                copiar(temp, i);
             }
 
         }
@@ -74,13 +66,8 @@ void mostrarAscendente(){
 
 
 
-
-
-
-
-    }
         fclose(ptr);
-
+    }
 }
 void mostrarDescendente(){
 }
