@@ -11,17 +11,21 @@ typedef struct ciudad {
 } * TCiudad;
 
 void mostrarAscendente(){
-    //chequear cola no ini
+    //hacer el heap sort
+    //a lo ultimo llamar a destruir cola con una f que libere la memoria de la entrada
 }
 void mostrarDescendente(){
 }
 void reducirHorasManejo(){
 }
 void salir(){
-} //debo liberar o se libera solo?
+    exit(0);
+} //debo liberar o se libera solo? dejame el comentario es para acordarme de preguntarlo
 
 int main(){
-    int termino; termino = FALSE;
+    //se deberia leer el archivo en cada operacion 1|2|3, y se insertan las entradas en la ccp ahi
+    //crear la funcion de prioridad en cada operacion tambien
+    int termino = FALSE;
     do{
         printf("Ingrese el numero de la operacion que desee\n");
         printf("1. Mostrar las ciudades por visitar en orden ascendente\n");
@@ -37,7 +41,8 @@ int main(){
             case 4: salir(); termino = TRUE; break;
             default: printf("El numero ingresado no es valido\n");
         }
-    }while (termino == 0);
+    }while (!termino);
     return 0;
+
 }
 
