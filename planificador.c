@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define FALSE 0;
 #define TRUE 1;
@@ -21,10 +22,6 @@ void vaciar(char temp[]) {          //vacia un arreglo de char
     for(i = 0; i < 50; i++)
         temp[i] = '\0';
 }
-void copiar(char temp[]; int i) {
-    int N = strlen(temp) + 1;       guarda la longitud de temp + '\0'
-    ciudad
-}
 
 void mostrarAscendente(){
     //hacer el heap sort
@@ -42,23 +39,58 @@ void mostrarAscendente(){
         }
         rewind(ptr);                    //vuelvo al principio del archivo
         TCiudad ciudad;
-        ciudad = (TCiudad)malloc(cont * sizeof(struct ciudad));
+        ciudad = (TCiudad)malloc(cont * sizeof(struct ciudad)); //si no los meto en un arreglo aca reservo para uno solo.
         if(ciudad == NULL)
             printf("No se pudo reservar memoria. \n");
         else {
             vaciar(temp);
             fgets(temp, 50, ptr);       //me salto la primera linea
-            for(i = 0; !feof(f); i++) {
+            for(i = 0; !feof(ptr); i++) { //los inserto en un arreglo, si los meto directo a la ccp esto no va
                 vaciar(temp);
                 aux = '0';
                 for(j = 0; aux != ';'; j++) {
-                    aux = fget(ptr);
+                    aux = fgetc(ptr);
                     if(aux != ';') {
                         temp[j] = aux;          //guardo cada char del nombre en temp;
                     }
                 }
-                copiar(temp, i);
+                //guardo el nombre
+                int N = strlen(temp) + 1;       //long de temp + '\0'
+                ciudad[i].nombre = (char*)malloc(N * sizeof(char));
+                if(ciudad[i].nombre != NULL)
+                    strcpy(ciudad[i].nombre, temp);
+                //guardo x
+                vaciar(temp);
+                aux = '0';
+                for(j = 0; aux != ';'; j++) {
+                    aux = fgetc(ptr);
+                    if(aux != ';')
+                        temp[j] = aux;
+                }
+                ciudad[i].pos_x = atof(temp);
+                //guardo y
+                vaciar(temp);
+                fgets(temp,7,ptr);           //lee el resto de la linea
+                ciudad[i].pos_y = atof(temp);
+
+                printf("Ciudad: %s (%.2f,%.2f) \n",ciudad[i].nombre,ciudad[i].pos_x,ciudad[i].pos_y);
             }
+            //leo el x de la posicion
+            rewind(ptr);
+            vaciar(temp);
+            aux = '0';
+            for(j = 0; aux != ';'; j++) {
+                aux = fgetc(ptr);
+                if(aux != ';')
+                    temp[j] = aux;
+            }
+            float x_actual = atof(temp);
+            //leo el y de la posicion
+            vaciar(temp);
+            fgets(temp,7,ptr);
+            float y_actual = atof(temp);
+            printf("Posicion: %.2f - %.2f \n", x_actual, y_actual);
+
 
         }
 
@@ -69,6 +101,7 @@ void mostrarAscendente(){
         fclose(ptr);
     }
 }
+
 void mostrarDescendente(){
 }
 void reducirHorasManejo(){
