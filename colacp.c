@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "colacp.h"
 
 #define FALSE 0
 #define TRUE 1
@@ -8,32 +9,8 @@
 #define POS_NULA NULL
 #define ELE_NULO NULL
 
-typedef void * TClave;
-typedef void * TValor;
 
-typedef struct entrada {
-    TClave clave;
-    TValor valor;
-} * TEntrada;
 
-typedef struct TNodo {
-    TEntrada entrada;
-    struct TNodo * padre;
-    struct TNodo * hijo_izquierdo;
-    struct TNodo * hijo_derecho;
-} * TNodo;
-
-typedef struct cola_con_prioridad {
-    int cantidad_elementos;
-    TNodo raiz;
-    int (*comparador)(TEntrada, TEntrada);
-} * TColaCP;
-
-TColaCP crearColaCp(int (*f)(TEntrada, TEntrada));
-int cpInsertar(TColaCP cola, TEntrada entr);
-TEntrada cpEliminar(TColaCP cola);
-int cpCantidad(TColaCP cola);
-void cpDestruir(TColaCP cola, void (*fEliminar)(TEntrada));
 
 TColaCP crearColaCp(int (*f)(TEntrada, TEntrada)){
     TColaCP cola = (TColaCP)malloc(sizeof(struct cola_con_prioridad));
@@ -245,11 +222,15 @@ int cpCantidad(TColaCP cola){
 
 void cpDestruir(TColaCP cola, void (*fEliminar)(TEntrada)){
     if(cola == NULL) exit(CCP_NO_INI);
+
     while(cola->cantidad_elementos != 0){
         int nivel = (int)(log(cola->cantidad_elementos)/log(2));
         TNodo aux = buscarUltimo(cola, nivel);
         fEliminar(aux->entrada);
         free(aux);
     }
+    free(cola);
 }
+
+
 

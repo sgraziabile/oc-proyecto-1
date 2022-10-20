@@ -11,6 +11,7 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option parameters="viajes" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
@@ -20,6 +21,7 @@
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option parameters="viajes" />
 				<Compiler>
 					<Add option="-O2" />
 				</Compiler>
@@ -36,6 +38,9 @@
 		</Unit>
 		<Unit filename="colacp.c">
 			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="colacp.h">
+			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="planificador.c">
 			<Option compilerVar="CC" />

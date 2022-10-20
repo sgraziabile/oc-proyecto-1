@@ -1,31 +1,39 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "colacp.h"
+#include "math.h"
 
-#define FALSE 0;
-#define TRUE 1;
+#define FALSE 0
+#define TRUE 1
 
-typedef struct ciudad {
-    char * nombre;
-    float pos_x;
-    float pos_y;
-} * TCiudad;
+int minHeap(TEntrada ent1, TEntrada ent2){
+    if(ent2->valor > ent1->valor)
+        return -1;
+    else if(ent1->valor > ent2->valor)
+        return 1;
+    else return 0;
+}
 
-void crearCiudad(int x, int y, char * nombre) {
+void crearCiudad(float x, float y, char * nombre){
         TCiudad ciudad = (TCiudad)malloc(sizeof(struct ciudad));
         ciudad->pos_x = x;
         ciudad->pos_y = y;
-
 }
+
+TEntrada crearEntrada(TClave clave,TValor valor) {
+    TEntrada entrada = (TEntrada)malloc(sizeof(struct entrada));
+    entrada->clave = clave;
+    entrada->valor = valor;
+    return entrada;
+}
+
 void vaciar(char temp[]) {          //vacia un arreglo de char
     int i;
     for(i = 0; i < 50; i++)
         temp[i] = '\0';
 }
-
-void mostrarAscendente(){
-    //hacer el heap sort
-    //a lo ultimo llamar a destruir cola con una f que libere la memoria de la entrada
+TCiudad guardarCiudades() {
     int i; int j;
     int cont = -1;
     char temp[50];
@@ -44,8 +52,8 @@ void mostrarAscendente(){
             printf("No se pudo reservar memoria. \n");
         else {
             vaciar(temp);
-            fgets(temp, 50, ptr);       //me salto la primera linea
-            for(i = 0; !feof(ptr); i++) { //los inserto en un arreglo, si los meto directo a la ccp esto no va
+            fgets(temp, 50, ptr);           //me salto la primera linea
+            for(i = 0; !feof(ptr); i++) {   //los inserto en un arreglo, si los meto directo a la ccp esto no va
                 vaciar(temp);
                 aux = '0';
                 for(j = 0; aux != ';'; j++) {
@@ -75,31 +83,54 @@ void mostrarAscendente(){
 
                 printf("Ciudad: %s (%.2f,%.2f) \n",ciudad[i].nombre,ciudad[i].pos_x,ciudad[i].pos_y);
             }
-            //leo el x de la posicion
-            rewind(ptr);
-            vaciar(temp);
-            aux = '0';
-            for(j = 0; aux != ';'; j++) {
-                aux = fgetc(ptr);
-                if(aux != ';')
-                    temp[j] = aux;
-            }
-            float x_actual = atof(temp);
-            //leo el y de la posicion
-            vaciar(temp);
-            fgets(temp,7,ptr);
-            float y_actual = atof(temp);
-            printf("Posicion: %.2f - %.2f \n", x_actual, y_actual);
-
-
-        }
-
-
-
-
-
-        fclose(ptr);
+    fclose(ptr);
+    return ciudad;
+}
+TEntrada guardarPosicion() {
+    int j;
+    char temp[50];
+    char aux;
+    FILE * ptr;
+    ptr = fopen("archivo_texto.txt","r");  //argv[1]
+    //leo el x de la posicion
+    aux = '0';
+    for(j = 0; aux != ';'; j++) {
+    aux = fgetc(ptr);
+        if(aux != ';')
+            temp[j] = aux;
     }
+    float x_actual = atof(temp);
+    //leo el y de la posicion
+    vaciar(temp);
+    fgets(temp,7,ptr);
+    float y_actual = atof(temp);
+    printf("Posicion: %.2f - %.2f \n", x_actual, y_actual);
+    fclose(ptr);
+
+    TEntrada entrada = (TEntrada)malloc(sizeof(struct entrada));
+    entrada->clave = (TClave*)malloc(sizeof(x_actual));
+    entrada->valor = (TValor*)malloc(sizeof(y_actual));
+    return entrada;
+}
+float calcularDistancia(TClave pos_x, TValor pos_y, TCiudad ciudad) {
+    float distancia =(float)(ciudad->pos_x) - (float)*pos_x +(float)(ciudad->pos_y)* - pos_y;
+    return distancia;
+}
+void mostrarAscendente(){
+    //hacer el heap sort
+    //a lo ultimo llamar a destruir cola con una f que libere la memoria de la entrada
+    int i; float distancia;
+    TColaCP cola = crearColaCp(minHeap);
+    TCiudad ciudad = guardarCiudades();
+    int cantCiudades = sizeof(struct ciudad) / sizeof(ciudad[0]);
+    TEntrada entrada = guardarPosicion();
+    for(i = 0; i < cantCiudades; i++) {
+        distancia = calcularDistancia(entrada->clave, entrada->valor, ciudad[i]);
+        TEntrada entrada = crearEntrada((TClave)&ciudad[i], (TValor)&distancia);
+        cpInsertar(cola, entrada);
+    }
+
+    //termina la lectura
 }
 
 void mostrarDescendente(){
@@ -110,12 +141,11 @@ void salir(){
     exit(0);
 } //debo liberar o se libera solo? dejame el comentario es para acordarme de preguntarlo
 
-int main(){
+int main(int argc, char *argv[]){
     //se deberia leer el archivo en cada operacion 1|2|3, y se insertan las entradas en la ccp ahi
     //crear la funcion de prioridad en cada operacion tambien
     //hacer malloc para la cadena de char del nombre de la ciudad
     //ver el tema de $>planificador <archvo_texto>
-
 
     int termino = FALSE;
     do{
@@ -137,6 +167,5 @@ int main(){
         }
     }while (!termino);
     return 0;
-
 }
 
