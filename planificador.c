@@ -83,8 +83,11 @@ TCiudad guardarCiudades() {
 
                 printf("Ciudad: %s (%.2f,%.2f) \n",ciudad[i].nombre,ciudad[i].pos_x,ciudad[i].pos_y);
             }
+        }
+        return ciudad;
+    }
     fclose(ptr);
-    return ciudad;
+    return NULL;//te cambie el return pq no andaba por tus llaves
 }
 TEntrada guardarPosicion() {
     int j;
@@ -112,10 +115,10 @@ TEntrada guardarPosicion() {
     entrada->valor = (TValor*)malloc(sizeof(y_actual));
     return entrada;
 }
-float calcularDistancia(TClave pos_x, TValor pos_y, TCiudad ciudad) {
+/*float calcularDistancia(TClave pos_x, TValor pos_y, TCiudad ciudad) {
     float distancia =(float)(ciudad->pos_x) - (float)*pos_x +(float)(ciudad->pos_y)* - pos_y;
     return distancia;
-}
+}*/
 void mostrarAscendente(){
     //hacer el heap sort
     //a lo ultimo llamar a destruir cola con una f que libere la memoria de la entrada
@@ -125,7 +128,8 @@ void mostrarAscendente(){
     int cantCiudades = sizeof(struct ciudad) / sizeof(ciudad[0]);
     TEntrada entrada = guardarPosicion();
     for(i = 0; i < cantCiudades; i++) {
-        distancia = calcularDistancia(entrada->clave, entrada->valor, ciudad[i]);
+       // distancia = calcularDistancia(entrada->clave, entrada->valor, ciudad[i]);
+       distancia = i;
         TEntrada entrada = crearEntrada((TClave)&ciudad[i], (TValor)&distancia);
         cpInsertar(cola, entrada);
     }
