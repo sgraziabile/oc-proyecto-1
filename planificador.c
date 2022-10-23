@@ -33,11 +33,12 @@ void vaciar(char temp[]) {          //vacia un arreglo de char
     for(i = 0; i < 50; i++)
         temp[i] = '\0';
 }
-TCiudad guardarCiudades() {
+TCiudad guardarCiudades(int *size) {
     int i; int j;
-    int cont = -1;
+    int cont = 0;
     char temp[50];
     char aux;
+    TCiudad ret = NULL;
     FILE * ptr;
     ptr = fopen("archivo_texto.txt","r");
     if(ptr != NULL) {
@@ -45,15 +46,16 @@ TCiudad guardarCiudades() {
             fgets(temp, 50, ptr);
             cont++;
         }
+        *size = cont + 1;               //guardo la longitud del arreglo
         rewind(ptr);                    //vuelvo al principio del archivo
         TCiudad ciudad;
-        ciudad = (TCiudad)malloc(cont * sizeof(struct ciudad)); //si no los meto en un arreglo aca reservo para uno solo.
+        ciudad = (TCiudad)malloc(cont * sizeof(struct ciudad)); //
         if(ciudad == NULL)
             printf("No se pudo reservar memoria. \n");
         else {
             vaciar(temp);
             fgets(temp, 50, ptr);           //me salto la primera linea
-            for(i = 0; !feof(ptr); i++) {   //los inserto en un arreglo, si los meto directo a la ccp esto no va
+            for(i = 1; !feof(ptr); i++) {
                 vaciar(temp);
                 aux = '0';
                 for(j = 0; aux != ';'; j++) {
@@ -80,58 +82,49 @@ TCiudad guardarCiudades() {
                 vaciar(temp);
                 fgets(temp,7,ptr);           //lee el resto de la linea
                 ciudad[i].pos_y = atof(temp);
-
-                printf("Ciudad: %s (%.2f,%.2f) \n",ciudad[i].nombre,ciudad[i].pos_x,ciudad[i].pos_y);
             }
-        }
-        return ciudad;
-    }
-    fclose(ptr);
-    return NULL;//te cambie el return pq no andaba por tus llaves
-}
-TEntrada guardarPosicion() {
-    int j;
-    char temp[50];
-    char aux;
-    FILE * ptr;
-    ptr = fopen("archivo_texto.txt","r");  //argv[1]
-    //leo el x de la posicion
-    aux = '0';
-    for(j = 0; aux != ';'; j++) {
-    aux = fgetc(ptr);
-        if(aux != ';')
-            temp[j] = aux;
-    }
-    float x_actual = atof(temp);
-    //leo el y de la posicion
-    vaciar(temp);
-    fgets(temp,7,ptr);
-    float y_actual = atof(temp);
-    printf("Posicion: %.2f - %.2f \n", x_actual, y_actual);
-    fclose(ptr);
+                //Leo y guardo la posicion
+                rewind(ptr);                //vuelvo al principio del archivo
+                //leo el x de la posicion
+                aux = '0';
+                for(j = 0; aux != ';'; j++) {
+                aux = fgetc(ptr);
+                    if(aux != ';')
+                        temp[j] = aux;
+                }
+                float x_actual = atof(temp);
+                //leo el y de la posicion
+                vaciar(temp);
+                fgets(temp,7,ptr);
+                float y_actual = atof(temp);
+                ciudad[0].nombre = "Posicion";
+                ciudad[0].pos_x = x_actual;
+                ciudad[0].pos_y = y_actual;
 
-    TEntrada entrada = (TEntrada)malloc(sizeof(struct entrada));
-    entrada->clave = (TClave*)malloc(sizeof(x_actual));
-    entrada->valor = (TValor*)malloc(sizeof(y_actual));
-    return entrada;
+        }
+        ret = ciudad;
+    }
+    fclose(ptr);
+    return ret;
 }
-/*float calcularDistancia(TClave pos_x, TValor pos_y, TCiudad ciudad) {
-    float distancia =(float)(ciudad->pos_x) - (float)*pos_x +(float)(ciudad->pos_y)* - pos_y;
+
+float calcularDistancia(float pos_x, float pos_y, float ciudad_x, float ciudad_y) {
+    float distancia = abs((ciudad_x - pos_x) + (ciudad_y - pos_y));
     return distancia;
-}*/
+}
 void mostrarAscendente(){
     //hacer el heap sort
     //a lo ultimo llamar a destruir cola con una f que libere la memoria de la entrada
     int i; float distancia;
+    int cantCiudades = 0;
     TColaCP cola = crearColaCp(minHeap);
-    TCiudad ciudad = guardarCiudades();
-    int cantCiudades = sizeof(struct ciudad) / sizeof(ciudad[0]);
-    TEntrada entrada = guardarPosicion();
-    for(i = 0; i < cantCiudades; i++) {
-       // distancia = calcularDistancia(entrada->clave, entrada->valor, ciudad[i]);
-       distancia = i;
-        TEntrada entrada = crearEntrada((TClave)&ciudad[i], (TValor)&distancia);
-        cpInsertar(cola, entrada);
+    TCiudad ciudad = guardarCiudades(&cantCiudades);
+    for(i = 1; i < cantCiudades; i++) {
+        distancia = calcularDistancia(ciudad[0].pos_x,ciudad[0].pos_y, ciudad[i].pos_x, ciudad[i].pos_y);
+        printf("(%s, %.2f) \n", ciudad[i].nombre, distancia);
+        TEntrada entrada = crearEntrada((TClave)&ciudad[i], (TValor)&distancia);        //Entrada (TCiudad, Distancia)
+        //printf("Entrada: %s, %f", entrada->clave->nombre, entrada->valor);
+        //cpInsertar(cola, entrada);
     }
 
     //termina la lectura
