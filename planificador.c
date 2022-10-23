@@ -21,10 +21,12 @@ void crearCiudad(float x, float y, char * nombre){
         ciudad->pos_y = y;
 }
 
-TEntrada crearEntrada(TClave clave,TValor valor) {
+TEntrada crearEntrada(TClave clave, TValor valor) {
     TEntrada entrada = (TEntrada)malloc(sizeof(struct entrada));
-    entrada->clave = clave;
-    entrada->valor = valor;
+    entrada->clave = (TClave)malloc(sizeof(struct ciudad));
+    entrada->clave = (TCiudad) entrada->clave;
+    entrada->valor = (TValor)malloc(sizeof(float));
+    float *pd = (float*) entrada->valor;
     return entrada;
 }
 
@@ -124,7 +126,13 @@ void mostrarAscendente(){
         printf("(%s, %.2f) \n", ciudad[i].nombre, distancia);
         TEntrada entrada = crearEntrada((TClave)&ciudad[i], (TValor)&distancia);        //Entrada (TCiudad, Distancia)
         //printf("Entrada: %s, %f", entrada->clave->nombre, entrada->valor);
-        //cpInsertar(cola, entrada);
+        cpInsertar(cola, entrada);
+        i = 1;
+        while(cola->cantidad_elementos > 0) {
+            TEntrada ent = cpEliminar(cola);
+            //printf("%d. %s \n",i,(TCiudad)ent->clave->nombre);
+           i++;
+        }
     }
 
     //termina la lectura
