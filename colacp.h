@@ -36,4 +36,5 @@ int cpCantidad(TColaCP cola);
 void cpDestruir(TColaCP cola, void (*fEliminar)(TEntrada));
 
 int minHeap(TEntrada ent1, TEntrada ent2);
+int maxHeap(TEntrada ent1, TEntrada ent2);
 #endif // COLACP_H_INCLUDED

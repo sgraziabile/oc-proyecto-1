@@ -15,18 +15,22 @@ int minHeap(TEntrada ent1, TEntrada ent2){
     else return 0;
 }
 
-void crearCiudad(float x, float y, char * nombre){
-        TCiudad ciudad = (TCiudad)malloc(sizeof(struct ciudad));
-        ciudad->pos_x = x;
-        ciudad->pos_y = y;
+int maxHeap(TEntrada ent1, TEntrada ent2){
+    if(ent2->valor < ent1->valor)
+        return -1;
+    else if(ent1->valor < ent2->valor)
+        return 1;
+    else return 0;
 }
 
 TEntrada crearEntrada(TClave clave, TValor valor) {
+    float *pd1 = (float*)valor;
+    //printf("%.2f ... ", *pd1); //anda bien
     TEntrada entrada = (TEntrada)malloc(sizeof(struct entrada));
     entrada->clave = (TClave)malloc(sizeof(struct ciudad));
-    entrada->clave = (TCiudad) entrada->clave;
     entrada->valor = (TValor)malloc(sizeof(float));
-    float *pd = (float*) entrada->valor;
+    float *pd = (float*) (entrada->valor);
+    //printf("2.%.2f ... ", *pd); //NO anda
     return entrada;
 }
 
@@ -35,6 +39,7 @@ void vaciar(char temp[]) {          //vacia un arreglo de char
     for(i = 0; i < 50; i++)
         temp[i] = '\0';
 }
+
 TCiudad guardarCiudades(int *size) {
     int i; int j;
     int cont = 0;
@@ -48,7 +53,7 @@ TCiudad guardarCiudades(int *size) {
             fgets(temp, 50, ptr);
             cont++;
         }
-        *size = cont + 1;               //guardo la longitud del arreglo
+        *size = cont ;               //guardo la longitud del arreglo
         rewind(ptr);                    //vuelvo al principio del archivo
         TCiudad ciudad;
         ciudad = (TCiudad)malloc(cont * sizeof(struct ciudad)); //
@@ -102,7 +107,6 @@ TCiudad guardarCiudades(int *size) {
                 ciudad[0].nombre = "Posicion";
                 ciudad[0].pos_x = x_actual;
                 ciudad[0].pos_y = y_actual;
-
         }
         ret = ciudad;
     }
@@ -114,37 +118,52 @@ float calcularDistancia(float pos_x, float pos_y, float ciudad_x, float ciudad_y
     float distancia = abs((ciudad_x - pos_x) + (ciudad_y - pos_y));
     return distancia;
 }
+
 void mostrarAscendente(){
-    //hacer el heap sort
     //a lo ultimo llamar a destruir cola con una f que libere la memoria de la entrada
-    int i; float distancia;
+    int i; float* distancia = (float*) malloc(sizeof(float));
     int cantCiudades = 0;
     TColaCP cola = crearColaCp(minHeap);
     TCiudad ciudad = guardarCiudades(&cantCiudades);
+
     for(i = 1; i < cantCiudades; i++) {
-        distancia = calcularDistancia(ciudad[0].pos_x,ciudad[0].pos_y, ciudad[i].pos_x, ciudad[i].pos_y);
-        printf("(%s, %.2f) \n", ciudad[i].nombre, distancia);
-        TEntrada entrada = crearEntrada((TClave)&ciudad[i], (TValor)&distancia);        //Entrada (TCiudad, Distancia)
-        //printf("Entrada: %s, %f", entrada->clave->nombre, entrada->valor);
-        cpInsertar(cola, entrada);
-        i = 1;
-        while(cola->cantidad_elementos > 0) {
+        *distancia = calcularDistancia(ciudad[0].pos_x,ciudad[0].pos_y, ciudad[i].pos_x, ciudad[i].pos_y);
+       // printf("(%s, %.2f) ", ciudad[i].nombre, distancia);
+
+        TEntrada entrada = crearEntrada((TClave)&ciudad[i], (TValor)distancia);//Entrada (TCiudad, Distancia)
+        float *pd = (float*)(TValor)&distancia; //anda
+        float *pd2 = (float*)entrada->valor; //NO anda
+        //printf("%.2f\n", *pd2 );
+        TCiudad aux = (TCiudad)entrada->clave;
+        char* s = aux->nombre;
+        printf("Entrada: %s, %.2f \n", (s, pd2));
+        //cpInsertar(cola, entrada);
+        //i = 1;
+       /* while(cola->cantidad_elementos > 0) {
             TEntrada ent = cpEliminar(cola);
             //printf("%d. %s \n",i,(TCiudad)ent->clave->nombre);
            i++;
-        }
+        }  */
+        free(entrada->valor);
+        free(entrada);
     }
+    free(cola);
 
     //termina la lectura
 }
 
 void mostrarDescendente(){
+    //poner maxHeap
 }
+
 void reducirHorasManejo(){
+
 }
+
 void salir(){
+    //liberar todo
     exit(0);
-} //debo liberar o se libera solo? dejame el comentario es para acordarme de preguntarlo
+}
 
 int main(int argc, char *argv[]){
     //se deberia leer el archivo en cada operacion 1|2|3, y se insertan las entradas en la ccp ahi
@@ -170,6 +189,8 @@ int main(int argc, char *argv[]){
             case 4: salir(); termino = TRUE; break;
             default: printf("El numero ingresado no es valido\n");break;
         }
+        printf("\n");
+        //preguntar problema con char
     }while (!termino);
     return 0;
 }
