@@ -8,9 +8,9 @@
 #define TRUE 1
 
 int minHeap(TEntrada ent1, TEntrada ent2){
-    if(ent2->valor > ent1->valor)
+    if(*(float*)ent2->valor > *(float*)ent1->valor)
         return -1;
-    else if(ent1->valor > ent2->valor)
+    else if(*(float*)ent1->valor > *(float*)ent2->valor)
         return 1;
     else return 0;
 }
@@ -24,13 +24,9 @@ int maxHeap(TEntrada ent1, TEntrada ent2){
 }
 
 TEntrada crearEntrada(TClave clave, TValor valor) {
-    float *pd1 = (float*)valor;
-    //printf("%.2f ... ", *pd1); //anda bien
     TEntrada entrada = (TEntrada)malloc(sizeof(struct entrada));
-    entrada->clave = (TClave)malloc(sizeof(struct ciudad));
-    entrada->valor = (TValor)malloc(sizeof(float));
-    float *pd = (float*) (entrada->valor);
-    //printf("2.%.2f ... ", *pd); //NO anda
+    entrada->valor = valor; //el valor y la clave ya tienen su correspondiente malloc
+    entrada->clave = clave;
     return entrada;
 }
 
@@ -115,41 +111,32 @@ TCiudad guardarCiudades(int *size) {
 }
 
 float calcularDistancia(float pos_x, float pos_y, float ciudad_x, float ciudad_y) {
-    float distancia = abs((ciudad_x - pos_x) + (ciudad_y - pos_y));
+    float distancia = abs(ciudad_x - pos_x) + abs(ciudad_y - pos_y);
     return distancia;
 }
 
 void mostrarAscendente(){
     //a lo ultimo llamar a destruir cola con una f que libere la memoria de la entrada
-    int i; float* distancia = (float*) malloc(sizeof(float));
-    int cantCiudades = 0;
+    int cantCiudades = 0; int i;
     TColaCP cola = crearColaCp(minHeap);
     TCiudad ciudad = guardarCiudades(&cantCiudades);
 
     for(i = 1; i < cantCiudades; i++) {
+        float* distancia = (float*) malloc(sizeof(float));
         *distancia = calcularDistancia(ciudad[0].pos_x,ciudad[0].pos_y, ciudad[i].pos_x, ciudad[i].pos_y);
-       // printf("(%s, %.2f) ", ciudad[i].nombre, distancia);
-
         TEntrada entrada = crearEntrada((TClave)&ciudad[i], (TValor)distancia);//Entrada (TCiudad, Distancia)
-        float *pd = (float*)(TValor)&distancia; //anda
-        float *pd2 = (float*)entrada->valor; //NO anda
-        //printf("%.2f\n", *pd2 );
-        TCiudad aux = (TCiudad)entrada->clave;
-        char* s = aux->nombre;
-        printf("Entrada: %s, %.2f \n", (s, pd2));
-        //cpInsertar(cola, entrada);
-        //i = 1;
-       /* while(cola->cantidad_elementos > 0) {
-            TEntrada ent = cpEliminar(cola);
-            //printf("%d. %s \n",i,(TCiudad)ent->clave->nombre);
-           i++;
-        }  */
-        free(entrada->valor);
-        free(entrada);
+        cpInsertar(cola, entrada);
     }
-    free(cola);
+    i = 1;
+    while(cola->cantidad_elementos > 0) {
+        TEntrada ent = cpEliminar(cola); //anda mal
+        printf("%d. %s \n",i,((TCiudad)ent->clave)->nombre);
+        i++;
+    }
+    //free(entrada->valor);
+    //free(entrada);
 
-    //termina la lectura
+    //free(cola);
 }
 
 void mostrarDescendente(){
