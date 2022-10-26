@@ -129,13 +129,12 @@ void mostrarAscendente(){
     }
     i = 1;
     while(cola->cantidad_elementos > 0) {
-        TEntrada ent = cpEliminar(cola); //anda mal
+        TEntrada ent = cpEliminar(cola);
         printf("%d. %s \n",i,((TCiudad)ent->clave)->nombre);
         i++;
     }
     //free(entrada->valor);
     //free(entrada);
-
     //free(cola);
 }
 

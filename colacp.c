@@ -20,14 +20,15 @@ TColaCP crearColaCp(int (*f)(TEntrada, TEntrada)){
     return cola;
 }
 
-void posicionarNodo(TColaCP cola, TNodo nuevo, int nivel){
-    int nivelCompleto = pow(2,(nivel+1))-1;
+void posicionarNodo(TColaCP cola, TNodo* nuevo, int nivel){
+    int nivelCompleto = pow(2, nivel+1) -1;
     TNodo actual = cola->raiz;
 
     if(cola->cantidad_elementos == nivelCompleto){
         //insertar en un nuevo nivel h+1
         for(int i = 0; i < nivel; i++){actual = actual->hijo_izquierdo;}
-        actual->hijo_izquierdo = nuevo;
+        actual->hijo_izquierdo = *nuevo;
+        (*nuevo)->padre = actual;
     }else{
         //insertar en el nivel h
         int corrimientos = nivelCompleto - cola->cantidad_elementos;
@@ -38,24 +39,22 @@ void posicionarNodo(TColaCP cola, TNodo nuevo, int nivel){
         if(mitad != 1){
             if(corrimientos > mitad){
                 actual = actual->hijo_izquierdo;
-                corrimientos = corrimientos - mitad;
-
+                corrimientos -= mitad;
             }
-            else if(corrimientos < mitad){
+            else if(corrimientos < mitad)
                 actual = actual->hijo_derecho;
 
-            }
             //estoy en un subArbol, por eso disminuyo la variable mitad
             mitad = mitad/2;
         }
             //si la mitad == 1 estoy en el padre del nodo a insertar, verifico en que hijo deberia insertar
             if(mitad == 1){
                 if(corrimientos > mitad){//insertar hi
-                    actual->hijo_izquierdo = nuevo;
-                    nuevo->padre = actual;
+                    actual->hijo_izquierdo = *nuevo;
+                    (*nuevo)->padre = actual;
                 }else{//insertar hd
-                    actual->hijo_derecho = nuevo;
-                    nuevo->padre = actual;
+                    actual->hijo_derecho = *nuevo;
+                    (*nuevo)->padre = actual;
                 }
                 inserte = TRUE;
             }
@@ -70,7 +69,6 @@ int cpInsertar(TColaCP cola, TEntrada entr){
         //inserto en la raiz
         TNodo nuevo= (TNodo)malloc(sizeof(struct TNodo));
         cola->raiz = nuevo;
-
         cola->raiz->entrada = entr;
         cola->raiz->hijo_derecho = ELE_NULO;
         cola->raiz->hijo_izquierdo = ELE_NULO;
@@ -94,12 +92,11 @@ int cpInsertar(TColaCP cola, TEntrada entr){
             cola->cantidad_elementos++;
 
         }else{
-            posicionarNodo(cola, nuevo, nivel);
+            posicionarNodo(cola, &nuevo, nivel);
             cola->cantidad_elementos++;
         }
         while((nuevo->padre != NULL) && cola->comparador(nuevo->padre->entrada, nuevo->entrada) == 1){
             //swap de nuevo y padre
-            printf("paso");
             TNodo padreAnterior = nuevo->padre;
             nuevo->padre = nuevo->padre->padre;
             padreAnterior->padre = nuevo;
@@ -129,33 +126,29 @@ int cpInsertar(TColaCP cola, TEntrada entr){
 TNodo buscarUltimo(TColaCP cola, int nivel){
     TNodo ult = cola->raiz;
     int nivelCompleto = pow(2,(nivel+1))-1;
-    if(cola->cantidad_elementos == nivelCompleto){for(int i = 0; i < nivel; i++)ult = ult->hijo_derecho;}
+    if(cola->cantidad_elementos == nivelCompleto){for(int i = 0; i < nivel; i++)ult = ult->hijo_derecho; }
     else{
         //insertar en el nivel h
         int corrimientos = nivelCompleto - cola->cantidad_elementos +1;
-        int mitad = 2^(nivel-1);
+        int mitad = pow(2,nivel-1);
         int encontre = FALSE;
         while(!encontre){
             if(mitad != 1){
                 if(corrimientos > mitad){
                     ult = ult->hijo_izquierdo;
-                    corrimientos = corrimientos - mitad;
-
+                    corrimientos -= mitad;
                 }
                 else{
                     ult = ult->hijo_derecho;
-
                 }
             mitad = mitad/2;
             }
             if(mitad == 1){
-
                 if(corrimientos > mitad)
                     ult = ult->hijo_izquierdo;
                 else
                     ult = ult->hijo_derecho;
                 encontre = TRUE;
-
             }
         }
     }
@@ -178,12 +171,20 @@ TEntrada cpEliminar(TColaCP cola){
         ult->hijo_derecho = cola->raiz->hijo_derecho;
         ult->hijo_izquierdo = cola->raiz->hijo_izquierdo;
         cola->raiz = ult;
-        int huboSwap = TRUE;
+        int huboSwap = FALSE;
+        if(ult->hijo_izquierdo != NULL || ult->hijo_derecho != NULL) //si alguno de los dos hijos es distinto de nulo
+            huboSwap = TRUE;
 
         while(huboSwap){
             huboSwap = FALSE;
-            int prioridadMin = cola->comparador(ult->hijo_izquierdo->entrada, ult->hijo_derecho->entrada);
-            if(prioridadMin == -1){
+            int prioridadMin;
+            if(ult->hijo_izquierdo != ELE_NULO && ult->hijo_derecho != ELE_NULO)
+                prioridadMin = cola->comparador(ult->hijo_izquierdo->entrada, ult->hijo_derecho->entrada);
+            else if (ult->hijo_izquierdo != ELE_NULO)
+                prioridadMin = 1;
+            else
+                prioridadMin = -1;
+            if(prioridadMin == 1){ //el hi tiene mayor prioridad
                 if(cola->comparador(ult->entrada, ult->hijo_izquierdo->entrada) == 1){
                     TNodo hd = ult->hijo_derecho;
                     TNodo hi = ult->hijo_izquierdo;
@@ -203,12 +204,15 @@ TEntrada cpEliminar(TColaCP cola){
                     ult->padre = hi;
                     huboSwap = TRUE;
                 }
-            }else{
+            }else{ //el hd tiene mayor prioridad o las prioridades son iguales
                 if(cola->comparador(ult->entrada, ult->hijo_derecho->entrada) == 1){
                     TNodo hd = ult->hijo_derecho;
                     TNodo hi = ult->hijo_izquierdo;
                     ult->hijo_derecho = hd->hijo_derecho;
                     ult->hijo_izquierdo = hd->hijo_izquierdo;
+                    //SON VARIABLES LOCALES X ESO SE BORRAN
+                    //MUESTRA SALIQUELO Y DESP LA RAIZ QUEDA CON HIJOS NULOS
+                    //PQ LE ASIGNO ULT->HIJO_DERECHO = HD... PERO ESE HD SE BORRA
                     hd->hijo_derecho = ult;
                     hd->hijo_izquierdo = hi;
                     hi->padre = hd;
@@ -221,13 +225,15 @@ TEntrada cpEliminar(TColaCP cola){
                         cola->raiz = hd;
                     }
                     ult->padre = hd;
-                    huboSwap = TRUE;
+                    if(ult->hijo_izquierdo != NULL || ult->hijo_derecho != NULL) //si alguno de los dos hijos es distinto de nulo
+                        huboSwap = TRUE;
+
                 }
             }
         }
     }
     cola->cantidad_elementos--;
-    free(aux);
+    //free(aux);
     return ret;
 }
 
