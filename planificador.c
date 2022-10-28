@@ -25,7 +25,7 @@ int maxHeap(TEntrada ent1, TEntrada ent2){
 
 TEntrada crearEntrada(TClave clave, TValor valor) {
     TEntrada entrada = (TEntrada)malloc(sizeof(struct entrada));
-    entrada->valor = valor; //el valor y la clave ya tienen su correspondiente malloc
+    entrada->valor = valor;         //el valor y la clave ya tienen su correspondiente malloc
     entrada->clave = clave;
     return entrada;
 }
@@ -49,7 +49,7 @@ TCiudad guardarCiudades(int *size) {
             fgets(temp, 50, ptr);
             cont++;
         }
-        *size = cont ;               //guardo la longitud del arreglo
+        *size = cont ;                  //guardo la longitud del arreglo
         rewind(ptr);                    //vuelvo al principio del archivo
         TCiudad ciudad;
         ciudad = (TCiudad)malloc(cont * sizeof(struct ciudad)); //
@@ -64,7 +64,7 @@ TCiudad guardarCiudades(int *size) {
                 for(j = 0; aux != ';'; j++) {
                     aux = fgetc(ptr);
                     if(aux != ';') {
-                        temp[j] = aux;          //guardo cada char del nombre en temp;
+                        temp[j] = aux;       //guardo cada char del nombre en temp;
                     }
                 }
                 //guardo el nombre

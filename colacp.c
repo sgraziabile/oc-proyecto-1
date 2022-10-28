@@ -175,6 +175,7 @@ TEntrada cpEliminar(TColaCP cola){
         if(ult->hijo_izquierdo != NULL || ult->hijo_derecho != NULL) //si alguno de los dos hijos es distinto de nulo
             huboSwap = TRUE;
 
+        //burbujeo hacia abajo, reordeno el heap
         while(huboSwap){
             huboSwap = FALSE;
             int prioridadMin;
@@ -194,10 +195,12 @@ TEntrada cpEliminar(TColaCP cola){
                     hi->hijo_derecho = hd;
                     hd->padre = hi;
                     if(ult->padre != POS_NULA){
+                        //hago swap entre nodos internos
                         TNodo padreAnterior = ult->padre;
                         padreAnterior->hijo_izquierdo = hi;
                         hi ->padre = padreAnterior;
                     }else{
+                        //hago swap con la raiz
                         hi->padre = POS_NULA;
                         cola->raiz = hi;
                     }

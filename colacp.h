@@ -29,7 +29,6 @@ typedef struct ciudad {
 } * TCiudad;
 
 TColaCP crearColaCp(int (*f)(TEntrada, TEntrada));
-
 int cpInsertar(TColaCP cola, TEntrada entr);
 TEntrada cpEliminar(TColaCP cola);
 int cpCantidad(TColaCP cola);
