@@ -124,7 +124,7 @@ void mostrarAscendente(){
     for(i = 1; i < cantCiudades; i++) {
         float* distancia = (float*) malloc(sizeof(float));
         *distancia = calcularDistancia(ciudad[0].pos_x,ciudad[0].pos_y, ciudad[i].pos_x, ciudad[i].pos_y);
-        TEntrada entrada = crearEntrada((TClave)&ciudad[i], (TValor)distancia);//Entrada (TCiudad, Distancia)
+        TEntrada entrada = crearEntrada((TClave)&ciudad[i], (TValor)distancia);         //Entrada (TCiudad, Distancia)
         cpInsertar(cola, entrada);
     }
     i = 1;
@@ -134,16 +134,75 @@ void mostrarAscendente(){
         i++;
     }
     //free(entrada->valor);
-    //free(entrada);
     //free(cola);
 }
 
 void mostrarDescendente(){
-    //poner maxHeap
+    int cantCiudades = 0; int i;
+    TColaCP cola = crearColaCp(maxHeap);
+    TCiudad ciudad = guardarCiudades(&cantCiudades);
+    for(i = 1; i < cantCiudades; i++) {
+        float* distancia = (float*) malloc(sizeof(float));
+        *distancia = calcularDistancia(ciudad[0].pos_x,ciudad[0].pos_y, ciudad[i].pos_x, ciudad[i].pos_y);
+        TEntrada entrada = crearEntrada((TClave)&ciudad[i], (TValor)distancia);         //Entrada (TCiudad, Distancia)
+        cpInsertar(cola, entrada);
+    }
+    i = 1;
+    while(cola->cantidad_elementos > 0) {
+        TEntrada ent = cpEliminar(cola);
+        printf("%d. %s \n",i,((TCiudad)ent->clave)->nombre);
+        i++;
+    }
+    //free(entrada->valor)
+    //free(cola);
+
 }
 
 void reducirHorasManejo(){
-
+    //falta liberar memoria
+    int cantCiudades = 0;
+    float restantes = cantCiudades;
+    float * distanciaTotal = (float*)malloc(sizeof(float));
+    int i; int elimine;
+    int j = 1;
+    *distanciaTotal = 0;                                    //Se guarda en la pos_x de la primera ciudad de ciudades visitadas
+    TCiudad ciudadesSV = guardarCiudades(&cantCiudades);    //ciudades sin visitar
+    TCiudad ciudadesV = (TCiudad)malloc(cantCiudades * sizeof(struct ciudad));      //ciudades visitadas
+    restantes = cantCiudades;                             //Controlo la cantidad de ciudades sin visitar
+    //guardo la distancia recorria en la primer ciudad
+    ciudadesV[0].nombre = "Total";
+    ciudadesV[0].pos_x = *distanciaTotal;
+    while(restantes > 1) {                                 //mientras queden ciudades sin visitar
+        TColaCP cola = crearColaCp(minHeap);
+        for(i = 1; i < cantCiudades; i++) {
+            float* distancia = (float*) malloc(sizeof(float));
+            *distancia = calcularDistancia(ciudadesSV[0].pos_x,ciudadesSV[0].pos_y, ciudadesSV[i].pos_x, ciudadesSV[i].pos_y);
+            TEntrada entrada = crearEntrada((TClave)&ciudadesSV[i], (TValor)distancia);         //Entrada (TCiudad, Distancia)
+            cpInsertar(cola, entrada);
+        }
+        TEntrada ent = cpEliminar(cola);
+        //actualizo la posicion
+        ciudadesSV[0].pos_x = ((TCiudad)ent->clave)->pos_x;
+        ciudadesSV[0].pos_y = ((TCiudad)ent->clave)->pos_y;
+        ciudadesV[j] = *((TCiudad)ent->clave);
+        ciudadesV[0].pos_x += *(float*)ent->valor;          //aumento la distancia recorrida
+        j++;
+        //elimino la ciudad de la lista de no visitadas
+        elimine = 0;
+        i = 1;
+        while(i < cantCiudades && !elimine ) {
+            if(&ciudadesSV[i] == ((TCiudad)ent->clave)) {
+                int indice;
+                for(indice = i; indice < cantCiudades; indice++)
+                    ciudadesSV[indice] = ciudadesSV[indice+1];
+                i++;
+                restantes--;
+                cantCiudades--;
+                elimine = 1;
+            }
+        }
+    //fin del while
+    }
 }
 
 void salir(){
