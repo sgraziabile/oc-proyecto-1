@@ -125,7 +125,9 @@ void mostrarAscendente(){
         float* distancia = (float*) malloc(sizeof(float));
         *distancia = calcularDistancia(ciudad[0].pos_x,ciudad[0].pos_y, ciudad[i].pos_x, ciudad[i].pos_y);
         TEntrada entrada = crearEntrada((TClave)&ciudad[i], (TValor)distancia);         //Entrada (TCiudad, Distancia)
-        cpInsertar(cola, entrada);
+        if(cpInsertar(cola, entrada) == 1){
+            printf("%f ",((TCiudad)entrada->clave)->pos_x);
+        }
     }
     i = 1;
     while(cola->cantidad_elementos > 0) {
