@@ -223,7 +223,7 @@ int main(int argc, char *argv[]){
         printf("2. Mostrar las ciudades por visitar en orden descendente\n");
         printf("3. Reducir horas de manejo\n");
         printf("4. Salir\n");
-        int opcion;
+        int opcion = -1;
         printf("\n");
         scanf("%d", &opcion);
         printf("\n");
@@ -232,10 +232,9 @@ int main(int argc, char *argv[]){
             case 2: mostrarDescendente(); break;
             case 3: reducirHorasManejo(); break;
             case 4: salir(); termino = TRUE; break;
-            default: printf("El numero ingresado no es valido\n");break;
+            default: printf("El numero ingresado no es valido\n"); fflush(stdin);break;
         }
         printf("\n");
-        //preguntar problema con char
     }while (!termino);
     return 0;
 }
