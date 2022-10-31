@@ -16,9 +16,9 @@ int minHeap(TEntrada ent1, TEntrada ent2){
 }
 
 int maxHeap(TEntrada ent1, TEntrada ent2){
-    if(ent2->valor < ent1->valor)
+    if(*(float*)ent2->valor < *(float*)ent1->valor)
         return -1;
-    else if(ent1->valor < ent2->valor)
+    else if(*(float*)ent1->valor < *(float*)ent2->valor)
         return 1;
     else return 0;
 }
@@ -125,10 +125,9 @@ void mostrarAscendente(){
         float* distancia = (float*) malloc(sizeof(float));
         *distancia = calcularDistancia(ciudad[0].pos_x,ciudad[0].pos_y, ciudad[i].pos_x, ciudad[i].pos_y);
         TEntrada entrada = crearEntrada((TClave)&ciudad[i], (TValor)distancia);         //Entrada (TCiudad, Distancia)
-        if(cpInsertar(cola, entrada) == 1){
-            printf("%f ",((TCiudad)entrada->clave)->pos_x);
-        }
+        cpInsertar(cola, entrada);
     }
+
     i = 1;
     while(cola->cantidad_elementos > 0) {
         TEntrada ent = cpEliminar(cola);
@@ -162,7 +161,7 @@ void mostrarDescendente(){
 
 void reducirHorasManejo(){
     //falta liberar memoria
-    int cantCiudades = 0;
+    int cantCiudades = 0; //tenes q hace -1 en algun lado pelotudo
     float restantes = cantCiudades;
     float * distanciaTotal = (float*)malloc(sizeof(float));
     int i; int elimine;
