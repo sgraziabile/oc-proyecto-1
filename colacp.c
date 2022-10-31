@@ -26,10 +26,12 @@ void posicionarNodo(TColaCP cola, TNodo* nuevo, int nivel){
 
     if(cola->cantidad_elementos == nivelCompleto){
         //insertar en un nuevo nivel h+1
-        for(int i = 0; i < nivel-1; i++){actual = actual->hijo_izquierdo;}
+        for(int i = 0; i < nivel-1; i++)
+            actual = actual->hijo_izquierdo;
         actual->hijo_izquierdo = *nuevo;
         (*nuevo)->padre = actual;
-    }else{
+    }
+    else {
         //insertar en el nivel h
         int corrimientos = nivelCompleto - cola->cantidad_elementos;
         int mitad = pow(2,(nivel-1));
@@ -82,16 +84,16 @@ int cpInsertar(TColaCP cola, TEntrada entr){
         nuevo->hijo_izquierdo = ELE_NULO;
 
         int nivel = (int)(log10(cola->cantidad_elementos)/log10(2));
-        int lleno = ((log10(cola->cantidad_elementos+1)/log10(2))/nivel) == 1;
+        int lleno = ((log10(cola->cantidad_elementos+1)/log10(2))/nivel+1) == 1;
 
         //si lleno es true, debo insertar en un nuevo nivel
         if(lleno){
             TNodo actual = cola->raiz;
-            for(int i = 0; i < nivel; i++) actual = actual->hijo_izquierdo; //busco el nodo mas a la izquierda del ultimo nivel
+            while(actual->hijo_izquierdo != NULL)  //busco el nodo mas a la izquierda del ultimo nivel
+                actual = actual->hijo_izquierdo;
             actual->hijo_izquierdo = nuevo;
             nuevo->padre = actual;
             cola->cantidad_elementos++;
-
         }else{
             posicionarNodo(cola, &nuevo, nivel);
             cola->cantidad_elementos++;
