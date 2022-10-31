@@ -202,12 +202,14 @@ TEntrada cpEliminar(TColaCP cola){
         while(huboSwap){
             huboSwap = FALSE;
             int prioridadMin;
+            //busco el hijo con mayor prioridad
             if(ult->hijo_izquierdo != ELE_NULO && ult->hijo_derecho != ELE_NULO)
                 prioridadMin = cola->comparador(ult->hijo_izquierdo->entrada, ult->hijo_derecho->entrada);
             else if (ult->hijo_izquierdo != ELE_NULO)
                 prioridadMin = 1;
             else
                 prioridadMin = -1;
+
             if(prioridadMin == 1){ //el hi tiene mayor prioridad
                 if(cola->comparador(ult->entrada, ult->hijo_izquierdo->entrada) == 1){
                     TNodo hd = ult->hijo_derecho;
@@ -248,9 +250,7 @@ TEntrada cpEliminar(TColaCP cola){
                         cola->raiz = hd;
                     }
                     ult->padre = hd;
-                    if(ult->hijo_izquierdo != NULL || ult->hijo_derecho != NULL) //si alguno de los dos hijos es distinto de nulo
-                        huboSwap = TRUE;
-
+                    huboSwap = TRUE;
                 }
             }
         if(ult->hijo_izquierdo == NULL && ult->hijo_derecho == NULL) //si alguno de los dos hijos es distinto de nulo
