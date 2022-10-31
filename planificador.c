@@ -161,15 +161,15 @@ void mostrarDescendente(){
 
 void reducirHorasManejo(){
     //falta liberar memoria
-    int cantCiudades = 0; //tenes q hace -1 en algun lado pelotudo
-    float restantes = cantCiudades;
+    int cantCiudades; //tenes q hace -1 en algun lado pelotudo
+    float restantes;
     float * distanciaTotal = (float*)malloc(sizeof(float));
     int i; int elimine;
     int j = 1;
     *distanciaTotal = 0;                                    //Se guarda en la pos_x de la primera ciudad de ciudades visitadas
     TCiudad ciudadesSV = guardarCiudades(&cantCiudades);    //ciudades sin visitar
     TCiudad ciudadesV = (TCiudad)malloc(cantCiudades * sizeof(struct ciudad));      //ciudades visitadas
-    restantes = cantCiudades;                             //Controlo la cantidad de ciudades sin visitar
+    restantes = cantCiudades;                               //Controlo la cantidad de ciudades sin visitar
     //guardo la distancia recorria en la primer ciudad
     ciudadesV[0].nombre = "Total";
     ciudadesV[0].pos_x = *distanciaTotal;
@@ -191,19 +191,22 @@ void reducirHorasManejo(){
         //elimino la ciudad de la lista de no visitadas
         elimine = 0;
         i = 1;
-        while(i < cantCiudades && !elimine ) {
+        while(i < restantes && !elimine ) {
             if(&ciudadesSV[i] == ((TCiudad)ent->clave)) {
                 int indice;
-                for(indice = i; indice < cantCiudades; indice++)
+                for(indice = i; indice < restantes; indice++)
                     ciudadesSV[indice] = ciudadesSV[indice+1];
-                i++;
                 restantes--;
-                cantCiudades--;
                 elimine = 1;
             }
+            i++;
         }
     //fin del while
     }
+    for(i = 1; i < cantCiudades; i++) {
+        printf("%s \n", ciudadesV[i].nombre);
+    }
+    printf("Distancia recorrida: %f \n", ciudadesV[0].pos_x);
 }
 
 void salir(){

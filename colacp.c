@@ -102,10 +102,12 @@ int cpInsertar(TColaCP cola, TEntrada entr){
 TNodo buscarUltimo(TColaCP cola, int nivel){
     TNodo ult = cola->raiz;
     int nivelCompleto = pow(2,(nivel+1))-1;
-    if(cola->cantidad_elementos == nivelCompleto){for(int i = 0; i < nivel; i++)ult = ult->hijo_derecho; }
-    else{
-        //insertar en el nivel h
-        int corrimientos = nivelCompleto - cola->cantidad_elementos;
+    if(cola->cantidad_elementos == nivelCompleto){          //si esta completo, buscar el extremo derecho
+        while(ult->hijo_derecho != ELE_NULO)
+            ult = ult->hijo_derecho;
+    }
+    else{                                                   //el ultimo nodo no está en los extremos
+        int corrimientos = nivelCompleto - cola->cantidad_elementos +1;
         int mitad = pow(2,nivel-1);
         int encontre = FALSE;
         while(!encontre){
@@ -144,6 +146,8 @@ TEntrada cpEliminar(TColaCP cola){
     }else{
         int nivel = (int)(log10(cola->cantidad_elementos)/log10(2));
         TNodo ult = buscarUltimo(cola, nivel);
+        printf("ultimo: %d \n", ((TCiudad)ult->entrada)->pos_y);
+        printf("raiz: %d \n", ((TCiudad)cola->raiz->entrada)->pos_y);
         ult->hijo_derecho = cola->raiz->hijo_derecho;
         ult->hijo_izquierdo = cola->raiz->hijo_izquierdo;
         ult->padre = POS_NULA;
@@ -193,7 +197,7 @@ TEntrada cpEliminar(TColaCP cola){
         }
     }
     cola->cantidad_elementos--;
-    free(aux);
+    //free(aux);
     return ret;
 }
 
