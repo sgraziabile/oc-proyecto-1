@@ -116,7 +116,6 @@ float calcularDistancia(float pos_x, float pos_y, float ciudad_x, float ciudad_y
 }
 
 void mostrarAscendente(){
-    //a lo ultimo llamar a destruir cola con una f que libere la memoria de la entrada
     int cantCiudades = 0; int i;
     TColaCP cola = crearColaCp(minHeap);
     TCiudad ciudad = guardarCiudades(&cantCiudades);
@@ -125,30 +124,16 @@ void mostrarAscendente(){
         *distancia = calcularDistancia(ciudad[0].pos_x,ciudad[0].pos_y, ciudad[i].pos_x, ciudad[i].pos_y);
         TEntrada entrada = crearEntrada((TClave)&ciudad[i], (TValor)distancia);         //Entrada (TCiudad, Distancia)
         cpInsertar(cola, entrada);
-        /*printf("%d. %s \n",i,((TCiudad)entrada->clave)->nombre);
-        if(cola->raiz->hijo_izquierdo != NULL)
-            printf("HIJO IZQ %s \n",((TCiudad)cola->raiz->hijo_izquierdo->entrada->clave)->nombre);*/
-
     }
-       /* printf("raiz %s \n",((TCiudad)cola->raiz->entrada->clave)->nombre);
-        if(cola->raiz->hijo_izquierdo != NULL)
-        printf("raiz hi %s \n",((TCiudad)cola->raiz->hijo_izquierdo->entrada->clave)->nombre);
-        if(cola->raiz->hijo_derecho != NULL)
-        printf("raiz hd %s \n",((TCiudad)cola->raiz->hijo_derecho->entrada->clave)->nombre);
-        if(cola->raiz->hijo_izquierdo->hijo_izquierdo != NULL)
-        printf("raiz hi hi  %s \n",((TCiudad)cola->raiz->hijo_izquierdo->hijo_izquierdo->entrada->clave)->nombre);
-        printf("raiz hi hd  %s \n",((TCiudad)cola->raiz->hijo_izquierdo->hijo_derecho->entrada->clave)->nombre);
-        printf("raiz hd hi  %s \n",((TCiudad)cola->raiz->hijo_derecho->hijo_izquierdo->entrada->clave)->nombre);
-        printf("raiz hd hd  %s \n",((TCiudad)cola->raiz->hijo_derecho->hijo_derecho->entrada->clave)->nombre);
-        printf("\n");*/
+    printf("Mostrar ascendente: \n");
     i = 1;
     while(cola->cantidad_elementos > 0) {
         TEntrada ent = cpEliminar(cola);
         printf("%d. %s \n",i,((TCiudad)ent->clave)->nombre);
         i++;
+        free(ent->valor);
     }
-    //free(entrada->valor);
-    //free(cola);
+    free(cola);
 }
 
 void mostrarDescendente(){
@@ -161,14 +146,16 @@ void mostrarDescendente(){
         TEntrada entrada = crearEntrada((TClave)&ciudad[i], (TValor)distancia);         //Entrada (TCiudad, Distancia)
         cpInsertar(cola, entrada);
     }
+    printf("Mostrar descendente: \n");
     i = 1;
     while(cola->cantidad_elementos > 0) {
         TEntrada ent = cpEliminar(cola);
         printf("%d. %s \n",i,((TCiudad)ent->clave)->nombre);
         i++;
+        free(ent->valor);
     }
-    //free(entrada->valor)
-    //free(cola);
+   // cpDestruir(cola,cpEliminar); no anda
+    free(cola);
 
 }
 
@@ -198,9 +185,6 @@ void reducirHorasManejo(){
         //actualizo la posicion
         ciudadesSV[0].pos_x = ((TCiudad)ent->clave)->pos_x;
         ciudadesSV[0].pos_y = ((TCiudad)ent->clave)->pos_y;
-        printf("x: %f\n", ((TCiudad)ent->clave)->pos_x);
-
-        printf("y: %f\n", ((TCiudad)ent->clave)->pos_y);
 
         ciudadesV[j] = *((TCiudad)ent->clave);
         ciudadesV[0].pos_x += *(float*)ent->valor;          //aumento la distancia recorrida
@@ -220,6 +204,7 @@ void reducirHorasManejo(){
         }
     //fin del while
     }
+    printf("Reducir horas: \n");
     for(i = 1; i < cantCiudades; i++) {
         printf("%s \n", ciudadesV[i].nombre);
     }

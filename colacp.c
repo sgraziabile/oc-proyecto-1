@@ -173,16 +173,19 @@ TEntrada cpEliminar(TColaCP cola){
 
         if(mayorPrioridad != -2)
             huboSwap = TRUE;
+        if(mayorPrioridad == 0){
+            mayorPrioridad = 1;
+        }
         //burbujeo hacia abajo, reordeno el heap
         if(huboSwap){
             huboSwap = FALSE;
-            if(mayorPrioridad == 1 && cola->comparador(actual->entrada, actual->hijo_derecho->entrada)){
+            if(mayorPrioridad == 1 && cola->comparador(actual->entrada, actual->hijo_derecho->entrada) == 1){
                 TEntrada auxiliar = actual->hijo_derecho->entrada;
                 actual->hijo_derecho->entrada = actual->entrada;
                 actual->entrada = auxiliar;
                 actual = actual->hijo_derecho;
                 huboSwap = TRUE;
-            }else if(mayorPrioridad == -1 && cola->comparador(actual->entrada, actual->hijo_izquierdo->entrada)){
+            }else if(mayorPrioridad == -1 && cola->comparador(actual->entrada, actual->hijo_izquierdo->entrada) == 1){
                 TEntrada auxiliar = actual->hijo_izquierdo->entrada;
                 actual->hijo_izquierdo->entrada = actual->entrada;
                 actual->entrada = auxiliar;
