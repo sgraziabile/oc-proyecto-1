@@ -133,7 +133,6 @@ void mostrarAscendente(TCiudad ciudades, int * cant){
         i++;
         free(ent->valor);
     }
-    //free(cola);
 }
 
 void mostrarDescendente(TCiudad ciudades, int * cant){
@@ -153,55 +152,48 @@ void mostrarDescendente(TCiudad ciudades, int * cant){
         i++;
         free(ent->valor);
     }
-   // cpDestruir(cola,cpEliminar); no anda
-    //free(cola);
+    //cpDestruir(cola,cpEliminar); no anda
+}
+
+void insertarEnCola(TColaCP cola, int * cant, TCiudad* visitados, float xOrigen, float yOrigen){
+    int cantCiudades = *cant;
+    for(int i = 1; i < cantCiudades; i++) {
+        if(visitados[i] != NULL){
+            TCiudad ciudad = visitados[i];
+            float* distancia = (float*) malloc(sizeof(float));
+            *distancia = calcularDistancia(xOrigen,yOrigen, ciudad->pos_x, ciudad->pos_y);
+            TEntrada entrada = crearEntrada((TClave)ciudad, (TValor)distancia);         //Entrada (TCiudad, Distancia)
+            cpInsertar(cola, entrada);
+        }
+    }
 }
 
 void reducirHorasManejo(TCiudad ciudades, int * cant){
     int cantCiudades = *cant;
+    float xOrigen = ciudades->pos_x;
+    float yOrigen = ciudades->pos_y;
     float distanciaTotal =0;
-    int j = 0; //con 1 el mismo error
-
-    TCiudad* ciudadesSV = (TCiudad*)malloc(cantCiudades * sizeof(TCiudad));      //ciudades sin visitar
-    for(int i = 0; i < cantCiudades; i++){
-        *(ciudadesSV+i) = (ciudades+i);
+    TCiudad* visitados = (TCiudad*)malloc((cantCiudades) * sizeof(TCiudad));
+    for(int i = 1; i < cantCiudades; i++){
+        visitados[i] = (ciudades+i);
     }
-    TCiudad* ciudadesV = (TCiudad*)malloc(cantCiudades * sizeof(TCiudad));      //ciudades visitadas
-    float restantes = cantCiudades;                                         //Controlo la cantidad de ciudades sin visitar
-
-    while(restantes > 1) {
+    printf("Reducir horas de manejo: \n");
+    for(int i = 1; i < cantCiudades; i++){
         TColaCP cola = crearColaCp(minHeap);
-        for(int i = 1; i < cantCiudades; i++) {
-            float distancia = *(float*) malloc(sizeof(float));
-            distancia = calcularDistancia(ciudadesSV[0]->pos_x,ciudadesSV[0]->pos_y, ciudadesSV[i]->pos_x, ciudadesSV[i]->pos_y);
-            TEntrada entrada = crearEntrada((TClave)&ciudadesSV[i], (TValor)&distancia);         //Entrada (TCiudad, Distancia)
-            cpInsertar(cola, entrada);
-        }
+        insertarEnCola(cola, cant, visitados, xOrigen, yOrigen);
         TEntrada ent = cpEliminar(cola);
-        //actualizo la posicion
-        (*ciudadesSV)->pos_x = ((TCiudad)ent->clave)->pos_x;
-        (*ciudadesSV)->pos_y = ((TCiudad)ent->clave)->pos_y;
-
-        *(ciudadesV+j) = ((TCiudad)ent->clave);
-        j++;
-        distanciaTotal += *(float*)ent->valor;          //aumento la distancia recorrida
-        //elimino la ciudad de la lista de no visitadas
-        int elimine =FALSE;
-        TCiudad aux = (TCiudad)(ent->clave);
-        for(int i = 1; i < restantes && !elimine; i++){
-            if((ciudadesSV+i) == aux) {
-                printf("Entro al if \n");
-                for(int indice = i; indice < restantes; indice++)
-                    ciudadesSV[indice] = NULL;
-                restantes--;
-                elimine = TRUE;
+        printf("%d. %s \n",i,((TCiudad)ent->clave)->nombre);
+        xOrigen = ((TCiudad)ent->clave)->pos_x;
+        yOrigen = ((TCiudad)ent->clave)->pos_y;
+        distanciaTotal += (*(float*)ent->valor);
+        int encontre = FALSE;
+        for(int j = 0; j < cantCiudades && !encontre; j++){
+            if(visitados[j] == ((TCiudad)ent->clave)){
+                encontre = TRUE;
+                visitados[j] = NULL;
             }
         }
-    }
-
-    printf("Reducir horas: \n");
-    for(int i = 1; i < cantCiudades; i++) {
-        printf("%s \n", (*ciudadesV+i)->nombre);
+        //eliminar cola
     }
     printf("Distancia recorrida: %f \n", distanciaTotal);
 }

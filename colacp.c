@@ -210,7 +210,7 @@ void cpDestruir(TColaCP cola, void (*fEliminar)(TEntrada)){
     while(cola->cantidad_elementos != 0){
         int nivel = (int)(log(cola->cantidad_elementos)/log(2));
         TNodo aux = buscarUltimo(cola, nivel);
-        fEliminar(aux->entrada);
+        fEliminar(aux->entrada->valor);
         free(aux);
     }
     free(cola);
