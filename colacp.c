@@ -207,7 +207,7 @@ int cpCantidad(TColaCP cola){
 void cpDestruir(TColaCP cola, void (*fEliminar)(TEntrada)){
     if(cola == NULL) exit(CCP_NO_INI);
 
-    while(cola->cantidad_elementos != 0){
+    for(int i = 0; i < cola->cantidad_elementos; i++){
         int nivel = (int)(log(cola->cantidad_elementos)/log(2));
         TNodo aux = buscarUltimo(cola, nivel);
         fEliminar(aux->entrada->valor);

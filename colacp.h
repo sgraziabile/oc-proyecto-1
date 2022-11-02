@@ -36,4 +36,5 @@ void cpDestruir(TColaCP cola, void (*fEliminar)(TEntrada));
 
 int minHeap(TEntrada ent1, TEntrada ent2);
 int maxHeap(TEntrada ent1, TEntrada ent2);
+void funcionEliminadora(TEntrada ent);
 #endif // COLACP_H_INCLUDED
