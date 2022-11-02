@@ -180,7 +180,7 @@ void reducirHorasManejo(TCiudad ciudades, int * cantCiudades){
         xOrigen = ((TCiudad)ent->clave)->pos_x;
         yOrigen = ((TCiudad)ent->clave)->pos_y;
         distanciaTotal += (*(float*)ent->valor);
-        cpDestruir(cola, funcionEliminadora);
+        //cpDestruir(cola, funcionEliminadora);
         int encontre = FALSE;
         for(int j = 0; j < *cantCiudades && !encontre; j++){
             if(visitados[j] == ((TCiudad)ent->clave)){ //setteamos en NULL el puntero a la ciudad que ya fue visitada
@@ -193,10 +193,11 @@ void reducirHorasManejo(TCiudad ciudades, int * cantCiudades){
 }
 
 void salir(TCiudad ciudades, int cantCiudades){
-    for(int i = 0; i < cantCiudades; i++){ //libero la caché
-        free((ciudades+i)->nombre);
-        free(ciudades+i);
+    for(int i = 1; i < cantCiudades; i++){ //libero la caché
+        free(ciudades[i].nombre);
     }
+    free(ciudades);
+    printf("Saliendo...");
     exit(0);
 }
 
