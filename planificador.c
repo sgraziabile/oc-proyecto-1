@@ -49,7 +49,13 @@ TCiudad guardarCiudades(int *size, char * archivo) {
     TCiudad ciudad = NULL;
     FILE * ptr;
     ptr = fopen(archivo, "r");
-    if(ptr != NULL) {
+    if(ptr == NULL) {
+        printf("\n");
+        printf("ERROR: No se pudo leer el archivo especificado. \n");
+        printf("Saliendo...");
+        exit(0);
+    }
+    else {
         while(!feof(ptr)) {             //cuento la cantidad de ciudades
             fgets(temp, 100, ptr);
             cont++;
