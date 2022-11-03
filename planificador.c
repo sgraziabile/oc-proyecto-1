@@ -105,7 +105,6 @@ TCiudad guardarCiudades(int *size, char * archivo) {
                 vaciar(temp);
                 fgets(temp,7,ptr);
                 float y_actual = atof(temp);
-                ciudad[0].nombre = "Posicion";
                 ciudad[0].pos_x = x_actual;
                 ciudad[0].pos_y = y_actual;
         }
