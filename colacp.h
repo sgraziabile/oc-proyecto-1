@@ -14,11 +14,11 @@ typedef struct entrada {
     TValor valor;
 } * TEntrada;
 
-typedef struct TNodo {
+typedef struct nodo {
     TEntrada entrada;
-    struct TNodo * padre;
-    struct TNodo * hijo_izquierdo;
-    struct TNodo * hijo_derecho;
+    struct nodo * padre;
+    struct nodo * hijo_izquierdo;
+    struct nodo * hijo_derecho;
 } * TNodo;
 
 typedef struct cola_con_prioridad {
@@ -33,11 +33,11 @@ typedef struct ciudad {
     float pos_y;
 } * TCiudad;
 
-TColaCP crearColaCp(int (*f)(TEntrada, TEntrada));
-int cpInsertar(TColaCP cola, TEntrada entr);
-TEntrada cpEliminar(TColaCP cola);
-int cpCantidad(TColaCP cola);
-void cpDestruir(TColaCP cola, void (*fEliminar)(TEntrada));
+TColaCP crear_cola_cp(int (*f)(TEntrada, TEntrada));
+int cp_insertar(TColaCP cola, TEntrada entr);
+TEntrada cp_eliminar(TColaCP cola);
+int cp_cantidad(TColaCP cola);
+void cp_destruir(TColaCP cola, void (*fEliminar)(TEntrada));
 
 int minHeap(TEntrada ent1, TEntrada ent2);
 int maxHeap(TEntrada ent1, TEntrada ent2);

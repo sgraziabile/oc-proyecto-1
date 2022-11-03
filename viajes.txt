@@ -1,5 +1,6 @@
 1;1
+Trenque Lauquen;4;0
 Saliquelo;2;2
 Bahia Blanca;4;4
-Trenque Lauquen;4;0
+Buenos Aires;4;1
 Carhue;0;3

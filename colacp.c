@@ -3,7 +3,7 @@
 #include <math.h>
 #include "colacp.h"
 
-TColaCP crearColaCp(int (*f)(TEntrada, TEntrada)){
+TColaCP crear_cola_cp(int (*f)(TEntrada, TEntrada)){
     TColaCP cola = (TColaCP)malloc(sizeof(struct cola_con_prioridad));
     cola->raiz = ELE_NULO;
     cola->cantidad_elementos = 0;
@@ -12,11 +12,12 @@ TColaCP crearColaCp(int (*f)(TEntrada, TEntrada)){
 }
 
 void posicionarNodo(TColaCP cola, TNodo nuevo, int nivel){
-    int nivelCompleto = pow(2, nivel+1)-1;
+    int nivelCompleto = pow(2, nivel+1)-1; //la cantidad de nodos posibles si el nivel está completo
     TNodo actual = cola->raiz;
     //insertar en el nivel h
-    int corrimientos = nivelCompleto - cola->cantidad_elementos;
-    int mitad = pow(2,(nivel-1));
+    int corrimientos = nivelCompleto - cola->cantidad_elementos; //representa la cantidad de nodos que tengo que moverme de derecha a izquierda hasta llegar al buscado
+    int mitad = pow(2,(nivel-1)); //representa la mitad de la cantidad de nodos posibles en el último nivel
+    int encontre = FALSE;
     int inserte = FALSE;
 
     while(!inserte){
@@ -44,13 +45,13 @@ void posicionarNodo(TColaCP cola, TNodo nuevo, int nivel){
     }
 }
 
-int cpInsertar(TColaCP cola, TEntrada entr){
+int cp_insertar(TColaCP cola, TEntrada entr){
     if(cola == NULL)
         exit(CCP_NO_INI);
 
-    if(cpCantidad(cola) == 0){
+    if(cp_cantidad(cola) == 0){
         //inserto en la raiz
-        TNodo nuevo= (TNodo)malloc(sizeof(struct TNodo));
+        TNodo nuevo= (TNodo)malloc(sizeof(struct nodo));
         cola->raiz = nuevo;
         cola->raiz->entrada = entr;
         cola->raiz->hijo_derecho = ELE_NULO;
@@ -59,13 +60,13 @@ int cpInsertar(TColaCP cola, TEntrada entr){
         cola->cantidad_elementos++;
         return TRUE;
     }else{
-        TNodo nuevo = (TNodo)malloc(sizeof(struct TNodo));
-        nuevo->entrada = entr;
+        TNodo nuevo = (TNodo)malloc(sizeof(struct nodo));
+        nuevo->entrada = entr; //ya se reservó memoria
         nuevo->hijo_derecho = ELE_NULO;
         nuevo->hijo_izquierdo = ELE_NULO;
 
-        int nivel = (int)(log10(cola->cantidad_elementos)/log10(2));
-        int nivelLleno = pow(2, nivel+1)-1;
+        int nivel = (int)(log10(cola->cantidad_elementos)/log10(2)); //fórmula para calcular el nivel del árbol
+        int nivelLleno = pow(2, nivel+1)-1; //cantidad de nodos que tiene el árbol si el último nivel está lleno
         int lleno = cola->cantidad_elementos ==  nivelLleno;
         //si lleno es true, debo insertar en un nuevo nivel
         if(lleno){
@@ -79,6 +80,7 @@ int cpInsertar(TColaCP cola, TEntrada entr){
         cola->cantidad_elementos++;
 
         while(nuevo->padre != NULL && cola->comparador(nuevo->padre->entrada, nuevo->entrada) == 1){
+            //swapeo hacia arriba
             TEntrada aux = nuevo->padre->entrada;
             nuevo->padre->entrada = nuevo->entrada;
             nuevo->entrada = aux;
@@ -91,15 +93,14 @@ int cpInsertar(TColaCP cola, TEntrada entr){
 
 TNodo buscarUltimo(TColaCP cola, int nivel){
     TNodo ult = cola->raiz;
-    int nivelCompleto = pow(2,(nivel+1))-1;
-    if(cola->cantidad_elementos == nivelCompleto){          //si esta completo, buscar el extremo derecho
+    int nivelCompleto = pow(2,(nivel+1))-1; //la cantidad de nodos posibles si el nivel está completo
+    if(cola->cantidad_elementos == nivelCompleto){     //si esta completo, el último está en el extremo derecho del árbol
         while(ult->hijo_derecho != ELE_NULO)
             ult = ult->hijo_derecho;
     }
-    else{                                                   //el ultimo nodo no está en los extremos
-
-        int corrimientos = nivelCompleto - cola->cantidad_elementos +1;
-        int mitad = pow(2,nivel-1);
+    else{
+        int corrimientos = nivelCompleto - cola->cantidad_elementos +1; //representa la cantidad de nodos que tengo que moverme de derecha a izquierda hasta llegar al buscado
+        int mitad = pow(2,nivel-1); //representa la mitad de la cantidad de nodos posibles en el último nivel
         int encontre = FALSE;
         while(!encontre){
             if(mitad != 1){
@@ -110,9 +111,9 @@ TNodo buscarUltimo(TColaCP cola, int nivel){
                 else{
                     ult = ult->hijo_derecho;
                 }
-                mitad = mitad/2;
+                mitad = mitad/2; //me moví a un sub-árbol, por lo tanto reduzco la mitad
             }
-           if(mitad == 1){
+           if(mitad == 1){ //estoy en el padre del nodo buscado
                 if(corrimientos > mitad){
                     ult = ult->hijo_izquierdo;
                 }else
@@ -124,7 +125,7 @@ TNodo buscarUltimo(TColaCP cola, int nivel){
     return ult;
 }
 
-TEntrada cpEliminar(TColaCP cola){
+TEntrada cp_eliminar(TColaCP cola){
     if(cola == NULL) exit(CCP_NO_INI);
     if(cola->cantidad_elementos == 0)
         return ELE_NULO;
@@ -135,7 +136,7 @@ TEntrada cpEliminar(TColaCP cola){
     if(cola->cantidad_elementos == 1){
         cola->raiz = ELE_NULO;
     }else{
-        int nivel = (int)(log10(cola->cantidad_elementos)/log10(2));
+        int nivel = (int)(log10(cola->cantidad_elementos)/log10(2)); //formula para calcular el nivel del árbol
         aux = buscarUltimo(cola, nivel);
         if(aux->padre->hijo_izquierdo == aux)
             aux->padre->hijo_izquierdo = ELE_NULO;
@@ -191,7 +192,7 @@ TEntrada cpEliminar(TColaCP cola){
     return ret;
 }
 
-int cpCantidad(TColaCP cola){
+int cp_cantidad(TColaCP cola){
     if(cola == NULL)
         exit(CCP_NO_INI);
     return cola->cantidad_elementos;
@@ -205,7 +206,7 @@ void destruirRec(TNodo actual, void (*fEliminar)(TEntrada)){
     fEliminar(actual->entrada);
     free(actual);
 }
-void cpDestruir(TColaCP cola, void (*fEliminar)(TEntrada)){
+void cp_destruir(TColaCP cola, void (*fEliminar)(TEntrada)){
     if(cola == NULL)
         exit(CCP_NO_INI);
     destruirRec(cola->raiz, fEliminar);

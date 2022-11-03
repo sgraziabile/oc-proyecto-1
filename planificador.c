@@ -22,7 +22,10 @@ int maxHeap(TEntrada ent1, TEntrada ent2){
         return -1;
     else return 0;
 }
-
+/*
+Al eliminar la entrada, liberamos solo la memoria del valor, ya que la clave
+corresponde a los TCiudad almacenados en la cache. Se liberan al salir de la aplicación.
+*/
 void eliminarEntrada(TEntrada ent){
     free(ent->valor);
     free(ent);
@@ -125,16 +128,16 @@ float calcularDistancia(float pos_x, float pos_y, float ciudad_x, float ciudad_y
 }
 
 void mostrarAscendente(TCiudad ciudades, int * cantCiudades){
-    TColaCP cola = crearColaCp(minHeap);
+    TColaCP cola = crear_cola_cp(minHeap);
     for(int i = 1; i < *cantCiudades; i++) {
         float* distancia = (float*) malloc(sizeof(float));
         *distancia = calcularDistancia(ciudades[0].pos_x,ciudades[0].pos_y, ciudades[i].pos_x, ciudades[i].pos_y);
         TEntrada entrada = crearEntrada((TClave)&ciudades[i], (TValor)distancia);    //Entrada (TCiudad, Distancia)
-        cpInsertar(cola, entrada);
+        cp_insertar(cola, entrada);
     }
     printf("Mostrar ascendente: \n");
     for(int i = 1; cola->cantidad_elementos > 0; i++) {
-        TEntrada ent = cpEliminar(cola);
+        TEntrada ent = cp_eliminar(cola);
         printf("%d. %s \n",i,((TCiudad)ent->clave)->nombre);
         eliminarEntrada(ent);
     }
@@ -142,16 +145,16 @@ void mostrarAscendente(TCiudad ciudades, int * cantCiudades){
 }
 
 void mostrarDescendente(TCiudad ciudades, int * cantCiudades){
-    TColaCP cola = crearColaCp(maxHeap);
+    TColaCP cola = crear_cola_cp(maxHeap);
     for(int i = 1; i < *cantCiudades; i++) {
         float* distancia = (float*) malloc(sizeof(float));
         *distancia = calcularDistancia(ciudades[0].pos_x,ciudades[0].pos_y, ciudades[i].pos_x, ciudades[i].pos_y);
         TEntrada entrada = crearEntrada((TClave)&ciudades[i], (TValor)distancia);     //Entrada (TCiudad, Distancia)
-        cpInsertar(cola, entrada);
+        cp_insertar(cola, entrada);
     }
     printf("Mostrar descendente: \n");
     for(int i = 1; cola->cantidad_elementos > 0; i++) {
-        TEntrada ent = cpEliminar(cola);
+        TEntrada ent = cp_eliminar(cola);
         printf("%d. %s \n",i,((TCiudad)ent->clave)->nombre);
         eliminarEntrada(ent);
     }
@@ -166,7 +169,7 @@ void insertarEnCola(TColaCP cola, int * cantCiudades, TCiudad* visitados, float 
             float* distancia = (float*) malloc(sizeof(float));
             *distancia = calcularDistancia(xOrigen, yOrigen, ciudad->pos_x, ciudad->pos_y);
             TEntrada entrada = crearEntrada((TClave)ciudad, (TValor)distancia);   //Entrada (TCiudad, Distancia)
-            cpInsertar(cola, entrada);
+            cp_insertar(cola, entrada);
         }
     }
 }
@@ -182,16 +185,16 @@ void reducirHorasManejo(TCiudad ciudades, int * cantCiudades){
     }
     printf("Reducir horas de manejo: \n");
     for(int i = 1; i < *cantCiudades; i++){
-        TColaCP cola = crearColaCp(minHeap);
+        TColaCP cola = crear_cola_cp(minHeap);
         insertarEnCola(cola, cantCiudades, visitados, xOrigen, yOrigen);
-        TEntrada ent = cpEliminar(cola);
+        TEntrada ent = cp_eliminar(cola);
         printf("%d. %s \n",i,((TCiudad)ent->clave)->nombre);
         xOrigen = ((TCiudad)ent->clave)->pos_x;
         yOrigen = ((TCiudad)ent->clave)->pos_y;
         distanciaTotal += *(float*)ent->valor;
         eliminarEntrada(ent);
         if(i != *cantCiudades-1) //cuando queda un unico elemento no llamamos a destruir porque ya fue liberado
-            cpDestruir(cola, eliminarEntrada);
+            cp_destruir(cola, eliminarEntrada);
 
         int encontre = FALSE;
         for(int j = 0; j < *cantCiudades && !encontre; j++){
@@ -204,7 +207,9 @@ void reducirHorasManejo(TCiudad ciudades, int * cantCiudades){
     free(visitados);
     printf("Distancia recorrida: %2.f \n", distanciaTotal);
 }
-
+/*
+Libera los nombres de las ciudades y las ciudades almacenadas en la caché.
+*/
 void salir(TCiudad ciudades, int cantCiudades){
     for(int i = 1; i < cantCiudades; i++){ //libero la caché
         free(ciudades[i].nombre);
