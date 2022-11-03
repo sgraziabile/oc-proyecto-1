@@ -196,7 +196,7 @@ void reducirHorasManejo(TCiudad ciudades, int * cantCiudades){
         }
     }
     free(visitados);
-    printf("Distancia recorrida: %f \n", distanciaTotal);
+    printf("Distancia recorrida: %2.f \n", distanciaTotal);
 }
 
 void salir(TCiudad ciudades, int cantCiudades){

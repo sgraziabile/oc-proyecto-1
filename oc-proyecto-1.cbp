@@ -33,9 +33,6 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="archivo_texto.txt">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
 		<Unit filename="colacp.c">
 			<Option compilerVar="CC" />
 		</Unit>

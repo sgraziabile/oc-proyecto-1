@@ -1,8 +1,5 @@
 1;1
 Saliquelo;2;2
-Trenque Lauquen;4;0
 Bahia Blanca;4;4
-Cordoba;10;10
+Trenque Lauquen;4;0
 Carhue;0;3
-Buenos Aires;9;9
-España;15;15
