@@ -1,5 +1,10 @@
 #ifndef COLACP_H_INCLUDED
 #define COLACP_H_INCLUDED
+#define FALSE 0
+#define TRUE 1
+#define CCP_NO_INI 2
+#define POS_NULA NULL
+#define ELE_NULO NULL
 
 typedef void * TClave;
 typedef void * TValor;

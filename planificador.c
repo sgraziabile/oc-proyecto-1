@@ -46,7 +46,7 @@ TCiudad guardarCiudades(int *size, char * archivo) {
     int cont = 0;
     char temp[100];
     char aux;
-    TCiudad ciudad;
+    TCiudad ciudad = NULL;
     FILE * ptr;
     ptr = fopen(archivo, "r");
     if(ptr != NULL) {
@@ -156,7 +156,7 @@ void mostrarDescendente(TCiudad ciudades, int * cantCiudades){
 void insertarEnCola(TColaCP cola, int * cantCiudades, TCiudad* visitados, float xOrigen, float yOrigen){
     //funcion utilizada para reducir horas de manejo
     for(int i = 1; i < *cantCiudades; i++) {
-        if(visitados[i] != NULL){
+        if(visitados[i] != POS_NULA){
             TCiudad ciudad = visitados[i];
             float* distancia = (float*) malloc(sizeof(float));
             *distancia = calcularDistancia(xOrigen, yOrigen, ciudad->pos_x, ciudad->pos_y);
@@ -169,7 +169,7 @@ void insertarEnCola(TColaCP cola, int * cantCiudades, TCiudad* visitados, float 
 void reducirHorasManejo(TCiudad ciudades, int * cantCiudades){
     float xOrigen = ciudades->pos_x;
     float yOrigen = ciudades->pos_y;
-    float distanciaTotal =0;
+    float distanciaTotal = 0;
 
     TCiudad* visitados = (TCiudad*)malloc((*cantCiudades) * sizeof(TCiudad));
     for(int i = 1; i < *cantCiudades; i++){ //creamos un arreglo que apunte a las ciudades ya guardadas en la caché
@@ -190,9 +190,9 @@ void reducirHorasManejo(TCiudad ciudades, int * cantCiudades){
 
         int encontre = FALSE;
         for(int j = 0; j < *cantCiudades && !encontre; j++){
-            if(visitados[j] == ((TCiudad)ent->clave)){ //setteamos en NULL el puntero a la ciudad que ya fue visitada
+            if(visitados[j] == ((TCiudad)ent->clave)){ //setteamos en posicion nula el puntero a la ciudad que ya fue visitada
                 encontre = TRUE;
-                visitados[j] = NULL;
+                visitados[j] = POS_NULA;
             }
         }
     }
@@ -213,7 +213,7 @@ int main(int argc, char *argv[]){
     TCiudad ciudades = NULL;
     int cantCiudades = 0;
     if(argc != 2){
-        printf("Hubo un error con los archivos ingresados como parametroc\n");
+        printf("Hubo un error con los archivos ingresados como parametros\n");
         salir(ciudades, cantCiudades);
     }
     ciudades = guardarCiudades(&cantCiudades, argv[1]); //creamos un arreglo de ciudades que funciona como caché

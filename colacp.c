@@ -3,13 +3,6 @@
 #include <math.h>
 #include "colacp.h"
 
-#define FALSE 0
-#define TRUE 1
-#define CCP_NO_INI 2
-#define POS_NULA NULL
-#define ELE_NULO NULL
-
-
 TColaCP crearColaCp(int (*f)(TEntrada, TEntrada)){
     TColaCP cola = (TColaCP)malloc(sizeof(struct cola_con_prioridad));
     cola->raiz = ELE_NULO;
@@ -52,7 +45,8 @@ void posicionarNodo(TColaCP cola, TNodo nuevo, int nivel){
 }
 
 int cpInsertar(TColaCP cola, TEntrada entr){
-    if(cola == NULL){exit(CCP_NO_INI);}
+    if(cola == NULL)
+        exit(CCP_NO_INI);
 
     if(cpCantidad(cola) == 0){
         //inserto en la raiz
@@ -198,7 +192,8 @@ TEntrada cpEliminar(TColaCP cola){
 }
 
 int cpCantidad(TColaCP cola){
-    if(cola == NULL) exit(CCP_NO_INI);
+    if(cola == NULL)
+        exit(CCP_NO_INI);
     return cola->cantidad_elementos;
 }
 
