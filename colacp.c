@@ -10,8 +10,6 @@
 #define ELE_NULO NULL
 
 
-
-
 TColaCP crearColaCp(int (*f)(TEntrada, TEntrada)){
     TColaCP cola = (TColaCP)malloc(sizeof(struct cola_con_prioridad));
     cola->raiz = ELE_NULO;
@@ -138,7 +136,7 @@ TEntrada cpEliminar(TColaCP cola){
         return ELE_NULO;
 
     TEntrada ret = cola->raiz->entrada;
-    TNodo aux = cola->raiz;
+    TNodo aux = NULL;
 
     if(cola->cantidad_elementos == 1){
         cola->raiz = ELE_NULO;
@@ -195,24 +193,27 @@ TEntrada cpEliminar(TColaCP cola){
         }
     }
     cola->cantidad_elementos--;
+    free(aux);
     return ret;
 }
-
 
 int cpCantidad(TColaCP cola){
     if(cola == NULL) exit(CCP_NO_INI);
     return cola->cantidad_elementos;
 }
 
+void destruirRec(TNodo actual, void (*fEliminar)(TEntrada)){
+    if(actual->hijo_izquierdo != NULL)
+        destruirRec(actual->hijo_izquierdo, fEliminar);
+    if(actual->hijo_derecho != NULL)
+        destruirRec(actual->hijo_derecho, fEliminar);
+    fEliminar(actual->entrada);
+    free(actual);
+}
 void cpDestruir(TColaCP cola, void (*fEliminar)(TEntrada)){
-    if(cola == NULL) exit(CCP_NO_INI);
-
-    for(int i = 0; i < cola->cantidad_elementos; i++){
-        int nivel = (int)(log(cola->cantidad_elementos)/log(2));
-        TNodo aux = buscarUltimo(cola, nivel);
-        fEliminar(aux->entrada->valor);
-        free(aux);
-    }
+    if(cola == NULL)
+        exit(CCP_NO_INI);
+    destruirRec(cola->raiz, fEliminar);
     free(cola);
 }
 

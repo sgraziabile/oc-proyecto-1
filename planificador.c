@@ -23,8 +23,9 @@ int maxHeap(TEntrada ent1, TEntrada ent2){
     else return 0;
 }
 
-void funcionEliminadora(TEntrada ent){
+void eliminarEntrada(TEntrada ent){
     free(ent->valor);
+    free(ent);
 }
 
 TEntrada crearEntrada(TClave clave, TValor valor) {
@@ -60,7 +61,7 @@ TCiudad guardarCiudades(int *size, char * archivo) {
             printf("No se pudo reservar memoria. \n");
         else {
             vaciar(temp);
-            fgets(temp, 100, ptr);           //me salto la primera linea
+            fgets(temp, 100, ptr);           //me salto la primera linea ya que es el origen
             for(i = 1; !feof(ptr); i++) {
                 vaciar(temp);
                 aux = '0';
@@ -118,9 +119,9 @@ float calcularDistancia(float pos_x, float pos_y, float ciudad_x, float ciudad_y
     return distancia;
 }
 
-void mostrarAscendente(TCiudad ciudades, int * cant){
+void mostrarAscendente(TCiudad ciudades, int * cantCiudades){
     TColaCP cola = crearColaCp(minHeap);
-    for(int i = 1; i < *cant; i++) {
+    for(int i = 1; i < *cantCiudades; i++) {
         float* distancia = (float*) malloc(sizeof(float));
         *distancia = calcularDistancia(ciudades[0].pos_x,ciudades[0].pos_y, ciudades[i].pos_x, ciudades[i].pos_y);
         TEntrada entrada = crearEntrada((TClave)&ciudades[i], (TValor)distancia);    //Entrada (TCiudad, Distancia)
@@ -130,13 +131,14 @@ void mostrarAscendente(TCiudad ciudades, int * cant){
     for(int i = 1; cola->cantidad_elementos > 0; i++) {
         TEntrada ent = cpEliminar(cola);
         printf("%d. %s \n",i,((TCiudad)ent->clave)->nombre);
+        eliminarEntrada(ent);
     }
-    cpDestruir(cola, funcionEliminadora);
+   free(cola);
 }
 
-void mostrarDescendente(TCiudad ciudades, int * cant){
+void mostrarDescendente(TCiudad ciudades, int * cantCiudades){
     TColaCP cola = crearColaCp(maxHeap);
-    for(int i = 1; i < *cant; i++) {
+    for(int i = 1; i < *cantCiudades; i++) {
         float* distancia = (float*) malloc(sizeof(float));
         *distancia = calcularDistancia(ciudades[0].pos_x,ciudades[0].pos_y, ciudades[i].pos_x, ciudades[i].pos_y);
         TEntrada entrada = crearEntrada((TClave)&ciudades[i], (TValor)distancia);     //Entrada (TCiudad, Distancia)
@@ -146,12 +148,14 @@ void mostrarDescendente(TCiudad ciudades, int * cant){
     for(int i = 1; cola->cantidad_elementos > 0; i++) {
         TEntrada ent = cpEliminar(cola);
         printf("%d. %s \n",i,((TCiudad)ent->clave)->nombre);
+        eliminarEntrada(ent);
     }
-    cpDestruir(cola, funcionEliminadora);
+    free(cola);
 }
 
-void insertarEnCola(TColaCP cola, int * cant, TCiudad* visitados, float xOrigen, float yOrigen){
-    for(int i = 1; i < *cant; i++) {
+void insertarEnCola(TColaCP cola, int * cantCiudades, TCiudad* visitados, float xOrigen, float yOrigen){
+    //funcion utilizada para reducir horas de manejo
+    for(int i = 1; i < *cantCiudades; i++) {
         if(visitados[i] != NULL){
             TCiudad ciudad = visitados[i];
             float* distancia = (float*) malloc(sizeof(float));
@@ -179,8 +183,11 @@ void reducirHorasManejo(TCiudad ciudades, int * cantCiudades){
         printf("%d. %s \n",i,((TCiudad)ent->clave)->nombre);
         xOrigen = ((TCiudad)ent->clave)->pos_x;
         yOrigen = ((TCiudad)ent->clave)->pos_y;
-        distanciaTotal += (*(float*)ent->valor);
-        //cpDestruir(cola, funcionEliminadora);
+        distanciaTotal += *(float*)ent->valor;
+        eliminarEntrada(ent);
+        if(i != *cantCiudades-1) //cuando queda un unico elemento no llamamos a destruir porque ya fue liberado
+            cpDestruir(cola, eliminarEntrada);
+
         int encontre = FALSE;
         for(int j = 0; j < *cantCiudades && !encontre; j++){
             if(visitados[j] == ((TCiudad)ent->clave)){ //setteamos en NULL el puntero a la ciudad que ya fue visitada
@@ -189,6 +196,7 @@ void reducirHorasManejo(TCiudad ciudades, int * cantCiudades){
             }
         }
     }
+    free(visitados);
     printf("Distancia recorrida: %f \n", distanciaTotal);
 }
 
@@ -204,8 +212,10 @@ void salir(TCiudad ciudades, int cantCiudades){
 int main(int argc, char *argv[]){
     TCiudad ciudades = NULL;
     int cantCiudades = 0;
-    if(argc != 2)
+    if(argc != 2){
+        printf("Hubo un error con los archivos ingresados como parametroc\n");
         salir(ciudades, cantCiudades);
+    }
     ciudades = guardarCiudades(&cantCiudades, argv[1]); //creamos un arreglo de ciudades que funciona como caché
     int termino = FALSE;
     do{
@@ -214,7 +224,7 @@ int main(int argc, char *argv[]){
         printf("2. Mostrar las ciudades por visitar en orden descendente\n");
         printf("3. Reducir horas de manejo\n");
         printf("4. Salir\n");
-        int opcion = -1;
+        int opcion = 0;
         printf("\n");
         scanf("%d", &opcion);
         printf("\n");
@@ -223,7 +233,7 @@ int main(int argc, char *argv[]){
             case 2: mostrarDescendente(ciudades, &cantCiudades); break;
             case 3: reducirHorasManejo(ciudades, &cantCiudades); break;
             case 4: salir(ciudades, cantCiudades); termino = TRUE; break;
-            default: printf("El numero ingresado no es valido\n"); fflush(stdin);break;
+            default: printf("El numero ingresado no es valido\n"); fflush(stdin);break; //limpio el buffer
         }
         printf("\n");
     }while (!termino);
